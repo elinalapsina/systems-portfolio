@@ -368,15 +368,7 @@ function CasePreview({ item, active, onClick }) {
           : 'border-neutral-200 bg-white hover:bg-neutral-50'
       )}
     >
-      <p
-        className={cn(
-          'text-[11px] uppercase tracking-[0.24em]',
-          active ? 'text-white/60' : 'text-neutral-400'
-        )}
-      >
-        {item.tag}
-      </p>
-      <h3 className="mt-2 text-base font-medium">{item.title}</h3>
+      <h3 className="text-base font-medium">{item.title}</h3>
       <p
         className={cn(
           'mt-2 text-sm leading-6',
@@ -714,43 +706,35 @@ export default function App() {
 
       <main className="mx-auto max-w-7xl px-4 pb-24 pt-24 sm:px-6 lg:px-8">
         <section id="home" className="scroll-mt-24 pb-20 pt-10 md:pb-28 md:pt-20">
-          <div className="grid items-start gap-12 lg:grid-cols-[1.15fr_0.85fr]">
-            <div>
-              <h1 className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-neutral-950 md:text-6xl">
-                Digital Experience <span className="text-neutral-400">&</span> Systems Design
-              </h1>
+          <div className="max-w-4xl">
+            <h1 className="text-4xl font-semibold leading-tight tracking-tight text-neutral-950 md:text-6xl">
+              Digital Experience <span className="text-neutral-400">&</span> Systems Design
+            </h1>
 
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-700 md:text-xl">
-                Structured digital experiences, workflows, and systems for education, sport, and international operations.
-              </p>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-700 md:text-xl">
+              Structured digital experiences, workflows, and systems for education, sport, and international operations.
+            </p>
 
-              <p className="mt-6 max-w-2xl text-base leading-7 text-neutral-500">
-                I create digital experiences, internal tools, workflow systems, and structured support environments that help organizations work more clearly, consistently, and effectively.
-              </p>
+            <p className="mt-6 max-w-2xl text-base leading-7 text-neutral-500">
+              I create digital experiences, internal tools, workflow systems, and structured support environments that help organizations work more clearly, consistently, and effectively.
+            </p>
 
-              <div className="mt-8 flex flex-wrap gap-3">
-                <button
-                  onClick={() => scrollToId('case-studies')}
-                  data-cursor="interactive"
-                  className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:scale-[1.02]"
-                >
-                  View Case Studies <ArrowRight size={16} />
-                </button>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button
+                onClick={() => scrollToId('case-studies')}
+                data-cursor="interactive"
+                className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:scale-[1.02]"
+              >
+                View Case Studies <ArrowRight size={16} />
+              </button>
 
-                <button
-                  onClick={() => scrollToId('documents')}
-                  data-cursor="interactive"
-                  className="rounded-full border border-neutral-200 bg-white px-5 py-3 text-sm font-medium text-neutral-900 transition hover:bg-neutral-50"
-                >
-                  View Documents
-                </button>
-              </div>
-            </div>
-
-            <div className="rounded-[32px] border border-neutral-200 bg-neutral-50 p-8">
-              <p className="text-lg leading-8 text-neutral-600">
-                Designing digital products, structured workflows, and operational systems with clarity, usability, and strong visual communication.
-              </p>
+              <button
+                onClick={() => scrollToId('documents')}
+                data-cursor="interactive"
+                className="rounded-full border border-neutral-200 bg-white px-5 py-3 text-sm font-medium text-neutral-900 transition hover:bg-neutral-50"
+              >
+                View Documents
+              </button>
             </div>
           </div>
         </section>
@@ -792,10 +776,7 @@ export default function App() {
               <div className="p-6 md:p-8 lg:p-10">
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                      {selectedCase.tag}
-                    </p>
-                    <h3 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 md:text-4xl">
+                    <h3 className="text-3xl font-semibold tracking-tight text-neutral-950 md:text-4xl">
                       {selectedCase.title}
                     </h3>
                     <p className="mt-4 max-w-3xl text-base leading-7 text-neutral-600">
@@ -933,7 +914,7 @@ export default function App() {
 
         <section id="additional-projects" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
-            title="Additional project range"
+            title="Additional projects"
             text="A broader view of related digital and operational work."
           />
 
@@ -952,7 +933,7 @@ export default function App() {
 
         <section id="visual-design" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
-            title="Visual communication"
+            title="Visual work"
             text="Supporting work across communication, presentation, and graphic output."
           />
 
@@ -971,7 +952,7 @@ export default function App() {
 
         <section id="documents" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
-            title="CV and motivation letter"
+            title="Documents"
             text="Supporting documents available directly inside the portfolio."
           />
 
@@ -988,7 +969,7 @@ export default function App() {
 
         <section id="about" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
-            title="A multidisciplinary profile"
+            title="About"
             text="Digital experience, systems design, workflow structure, communication, and operational clarity."
           />
 
