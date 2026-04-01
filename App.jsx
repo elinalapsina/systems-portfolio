@@ -5,7 +5,6 @@ import {
   X,
   ArrowRight,
   Mail,
-  Linkedin,
   MapPin,
   Phone,
   Lock,
@@ -18,8 +17,7 @@ import {
 const CONTACT = {
   email: 'elina.lapsina@gmail.com',
   phone: '+371 26420023',
-  linkedin: 'https://linkedin.com/in/your-profile',
-  location: 'Riga, Latvia',
+  location: 'Latvia',
 };
 
 const GOOGLE_DRIVE = {
@@ -31,13 +29,11 @@ const GOOGLE_DRIVE = {
 const DOCUMENTS = {
   cv: {
     title: 'Curriculum Vitae',
-    // Kad iedosi tiešo PDF linku vai file ID, aizvieto zemāk
-    fileUrl: '',
+    fileUrl: '/docs/CV_Elina_Lapsina_01_04_2026.pdf',
   },
   motivation: {
-    title: 'Motivation Letter',
-    // Kad iedosi tiešo PDF linku vai file ID, aizvieto zemāk
-    fileUrl: '',
+    title: 'Motivation Letter — StudySmarter',
+    fileUrl: '/docs/Motivation_letter_Elina_Lapsina_01_04_2026.pdf',
   },
 };
 
@@ -298,42 +294,15 @@ const FEATURED_CASES = [
 ];
 
 const ADDITIONAL_PROJECTS = [
-  {
-    title: 'Cars Showroom Operations Management System',
-    type: 'Operations / Internal System',
-  },
-  {
-    title: 'ASAS Corporate Website',
-    type: 'Website / Corporate',
-  },
-  {
-    title: 'ASAS Excellence Consultancy Website',
-    type: 'Website / Consulting',
-  },
-  {
-    title: 'Document Template System for Operational Use',
-    type: 'Documentation / Templates',
-  },
-  {
-    title: 'Sharjah Women’s Sports Club / Olympic Center',
-    type: 'Sports Operations / Digital Support',
-  },
-  {
-    title: 'WHOOP Performance Monitoring Pilot',
-    type: 'Performance Support / Pilot',
-  },
-  {
-    title: 'Mental Health & Sport Psychology Support System',
-    type: 'Support System / Sports',
-  },
-  {
-    title: 'Virtual 3D College Visit',
-    type: 'Digital Experience / Education',
-  },
-  {
-    title: 'Digital Learning Video Series',
-    type: 'Learning Resource / Content System',
-  },
+  { title: 'Cars Showroom Operations Management System', type: 'Operations / Internal System' },
+  { title: 'ASAS Corporate Website', type: 'Website / Corporate' },
+  { title: 'ASAS Excellence Consultancy Website', type: 'Website / Consulting' },
+  { title: 'Document Template System for Operational Use', type: 'Documentation / Templates' },
+  { title: 'Sharjah Women’s Sports Club / Olympic Center', type: 'Sports Operations / Digital Support' },
+  { title: 'WHOOP Performance Monitoring Pilot', type: 'Performance Support / Pilot' },
+  { title: 'Mental Health & Sport Psychology Support System', type: 'Support System / Sports' },
+  { title: 'Virtual 3D College Visit', type: 'Digital Experience / Education' },
+  { title: 'Digital Learning Video Series', type: 'Learning Resource / Content System' },
 ];
 
 const VISUAL_CATEGORIES = [
@@ -419,9 +388,7 @@ function DriveFolderEmbed({ folderId, folderUrl, title, mode = 'grid' }) {
           <FolderOpen className="h-5 w-5 text-neutral-500" />
           <div>
             <p className="text-sm font-medium text-neutral-900">{title}</p>
-            <p className="text-xs text-neutral-500">
-              Embedded Google Drive folder view
-            </p>
+            <p className="text-xs text-neutral-500">Embedded Google Drive folder view</p>
           </div>
         </div>
         <a
@@ -446,8 +413,6 @@ function DriveFolderEmbed({ folderId, folderUrl, title, mode = 'grid' }) {
 }
 
 function DocumentCard({ title, fileUrl }) {
-  const hasFile = Boolean(fileUrl);
-
   return (
     <div className="overflow-hidden rounded-[28px] border border-neutral-200 bg-white">
       <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
@@ -455,43 +420,22 @@ function DocumentCard({ title, fileUrl }) {
           <FileText className="h-5 w-5 text-neutral-500" />
           <div>
             <p className="text-sm font-medium text-neutral-900">{title}</p>
-            <p className="text-xs text-neutral-500">
-              {hasFile ? 'Embedded preview + direct open' : 'Waiting for file'}
-            </p>
+            <p className="text-xs text-neutral-500">Embedded preview + direct open</p>
           </div>
         </div>
 
-        {hasFile ? (
-          <a
-            href={fileUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-4 py-2 text-xs font-medium text-neutral-800 transition hover:bg-neutral-50"
-          >
-            Open <ExternalLink size={14} />
-          </a>
-        ) : (
-          <span className="inline-flex items-center rounded-full border border-neutral-200 px-4 py-2 text-xs text-neutral-500">
-            Awaiting file
-          </span>
-        )}
+        <a
+          href={fileUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-4 py-2 text-xs font-medium text-neutral-800 transition hover:bg-neutral-50"
+        >
+          Open <ExternalLink size={14} />
+        </a>
       </div>
 
-      <div className="flex h-[420px] items-center justify-center bg-neutral-50 p-6">
-        {hasFile ? (
-          <iframe src={fileUrl} title={title} className="h-full w-full" />
-        ) : (
-          <div className="max-w-md text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-white">
-              <FileText className="h-6 w-6 text-neutral-500" />
-            </div>
-            <p className="text-base font-medium text-neutral-900">{title}</p>
-            <p className="mt-2 text-sm leading-6 text-neutral-500">
-              Add the direct PDF link here when you send the file, and this card
-              will automatically become a live embedded document preview.
-            </p>
-          </div>
-        )}
+      <div className="h-[420px] bg-neutral-50">
+        <iframe src={fileUrl} title={title} className="h-full w-full" />
       </div>
     </div>
   );
@@ -647,10 +591,10 @@ export default function Portfolio() {
                   View Case Studies <ArrowRight size={16} />
                 </button>
                 <button
-                  onClick={() => scrollToId('sample-library')}
+                  onClick={() => scrollToId('documents')}
                   className="rounded-full border border-neutral-200 bg-white px-5 py-3 text-sm font-medium text-neutral-900 transition hover:bg-neutral-50"
                 >
-                  Open Sample Library
+                  View Documents
                 </button>
               </div>
             </div>
@@ -1043,8 +987,8 @@ export default function Portfolio() {
         <section id="documents" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
             eyebrow="Documents"
-            title="CV and motivation letter are prepared as embedded supporting materials"
-            text="The section is ready. Add the direct PDF links when you send the files."
+            title="CV and motivation letter are embedded as supporting materials"
+            text="Both documents are connected directly in the portfolio and open inside the site."
           />
 
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
@@ -1122,20 +1066,6 @@ export default function Portfolio() {
                   <div className="mt-2 text-sm text-neutral-950">{CONTACT.phone}</div>
                 </a>
 
-                <a
-                  href={CONTACT.linkedin}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4 transition hover:bg-neutral-50"
-                >
-                  <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                    <Linkedin size={14} /> LinkedIn
-                  </div>
-                  <div className="mt-2 flex items-center gap-2 text-sm text-neutral-950">
-                    View profile <ExternalLink size={14} />
-                  </div>
-                </a>
-
                 <div className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4">
                   <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-neutral-400">
                     <MapPin size={14} /> Location
@@ -1151,9 +1081,6 @@ export default function Portfolio() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <p>© 2026 Elīna Lapsiņa. Portfolio built as a one-file React artifact.</p>
             <div className="flex items-center gap-5">
-              <a href={CONTACT.linkedin} target="_blank" rel="noreferrer" className="hover:text-neutral-950">
-                LinkedIn
-              </a>
               <a href={`mailto:${CONTACT.email}`} className="hover:text-neutral-950">
                 Email
               </a>
