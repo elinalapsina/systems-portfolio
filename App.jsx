@@ -728,11 +728,7 @@ export default function App() {
         <section id="home" className="scroll-mt-24 pb-20 pt-10 md:pb-28 md:pt-20">
           <div className="grid items-start gap-12 lg:grid-cols-[1.15fr_0.85fr]">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-neutral-400">
-                Portfolio
-              </p>
-
-              <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-neutral-950 md:text-6xl">
+              <h1 className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-neutral-950 md:text-6xl">
                 Digital Experience <span className="text-neutral-400">&</span> Systems Design
               </h1>
 
