@@ -92,7 +92,7 @@ const FEATURED_CASES = [
     outcome:
       'The prototype was intended to support clearer discovery, more confident exploration, and a more structured path through education options.',
     relevance:
-      'Shows digital product thinking, information structure, and search-focused UX.',
+      'Digital product thinking, information structure, and search-focused UX.',
     sensitive: false,
   },
   {
@@ -131,7 +131,7 @@ const FEATURED_CASES = [
     outcome:
       'The redesign was intended to improve usability, readability, and overall confidence in the institutional web experience.',
     relevance:
-      'Demonstrates website structure, institutional clarity, and digital experience improvement.',
+      'Website structure, institutional clarity, and digital experience improvement.',
     sensitive: false,
   },
   {
@@ -169,7 +169,7 @@ const FEATURED_CASES = [
     outcome:
       'The structured flow was intended to reduce friction and support a more straightforward completion experience.',
     relevance:
-      'Shows service-flow thinking, user clarity, and structural UX logic.',
+      'Service-flow thinking, user clarity, and structural UX logic.',
     sensitive: false,
   },
   {
@@ -208,7 +208,7 @@ const FEATURED_CASES = [
     outcome:
       'The system was intended to support clearer internal coordination, stronger process visibility, and more structured operational work.',
     relevance:
-      'Strong proof of systems thinking, internal process design, and operational clarity.',
+      'Systems thinking, internal process design, and operational clarity.',
     sensitive: true,
   },
   {
@@ -247,7 +247,7 @@ const FEATURED_CASES = [
     outcome:
       'The adaptation was intended to improve practical usability and support a system that better matched operational needs.',
     relevance:
-      'Shows adaptation thinking, system adjustment, and operational value in a real organizational setting.',
+      'System adjustment and operational adaptation in a real context.',
     sensitive: true,
   },
   {
@@ -286,7 +286,7 @@ const FEATURED_CASES = [
     outcome:
       'The system was intended to support more visible, understandable, and manageable inventory operations.',
     relevance:
-      'Adds proof of inventory logic, internal tools, and structured operational support.',
+      'Inventory logic, internal tools, and structured operational support.',
     sensitive: true,
   },
 ];
@@ -403,7 +403,7 @@ function DocumentCard({ title, fileUrl }) {
           <FileText className="h-5 w-5 text-neutral-500" />
           <div>
             <p className="text-sm font-medium text-neutral-900">{title}</p>
-            <p className="text-xs text-neutral-500">Embedded preview + direct open</p>
+            <p className="text-xs text-neutral-500">PDF preview</p>
           </div>
         </div>
 
@@ -433,7 +433,7 @@ function SampleLibraryCard() {
           <FolderOpen className="h-5 w-5 text-neutral-500" />
           <div>
             <p className="text-sm font-medium text-neutral-900">Work Samples Library</p>
-            <p className="text-xs text-neutral-500">Embedded Google Drive folder</p>
+            <p className="text-xs text-neutral-500">Public Google Drive folder</p>
           </div>
         </div>
 
@@ -658,7 +658,11 @@ export default function App() {
 
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-neutral-200 bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <button onClick={() => scrollToId('home')} data-cursor="interactive" className="text-left">
+          <button
+            onClick={() => scrollToId('home')}
+            data-cursor="interactive"
+            className="text-left"
+          >
             <div className="text-[11px] uppercase tracking-[0.32em] text-neutral-400">
               Elīna Lapsiņa
             </div>
@@ -718,7 +722,6 @@ export default function App() {
             </div>
           </div>
         ) : null}
-
       </nav>
 
       <main className="mx-auto max-w-7xl px-4 pb-24 pt-24 sm:px-6 lg:px-8">
@@ -783,7 +786,7 @@ export default function App() {
           <SectionHeading
             eyebrow="Expertise"
             title="A multidisciplinary profile built around clarity, systems, and practical value"
-            text="The portfolio is designed to show not just what was made, but how problems were structured and how the work created clarity."
+            text="The work brings together digital experience, structure, communication, and operational thinking."
           />
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -796,8 +799,8 @@ export default function App() {
         <section id="case-studies" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
             eyebrow="Case Studies"
-            title="The main proof layer leads with digital experience, systems thinking, and workflow logic"
-            text="Featured projects are presented as structured case studies rather than a flat gallery."
+            title="Selected projects"
+            text="A focused view of digital, workflow, and systems-oriented work."
           />
 
           <div className="mt-10 grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
@@ -885,10 +888,7 @@ export default function App() {
                                 <Lock className="h-6 w-6 text-neutral-500" />
                               </div>
                               <p className="text-base font-medium text-neutral-900">
-                                Sensitive materials are intentionally withheld here.
-                              </p>
-                              <p className="mt-2 text-sm leading-6 text-neutral-500">
-                                Public visuals should be added only after careful anonymization.
+                                Sensitive visual material is not shown in the public version.
                               </p>
                             </>
                           ) : (
@@ -899,16 +899,13 @@ export default function App() {
                               <p className="text-base font-medium text-neutral-900">
                                 Final visuals can be selected from the sample library.
                               </p>
-                              <p className="mt-2 text-sm leading-6 text-neutral-500">
-                                Replace this area with curated screenshots when the final visual set is chosen.
-                              </p>
                             </>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    <InfoCard title="Process / Approach">
+                    <InfoCard title="Process">
                       <div className="space-y-3">
                         {selectedCase.process.map((item, index) => (
                           <div
@@ -927,9 +924,7 @@ export default function App() {
                 </div>
 
                 <div className="mt-8 grid gap-4 md:grid-cols-2">
-                  <InfoCard title="Outcome or Operational Value">
-                    {selectedCase.outcome}
-                  </InfoCard>
+                  <InfoCard title="Outcome">{selectedCase.outcome}</InfoCard>
                   <InfoCard title="Relevance">{selectedCase.relevance}</InfoCard>
                 </div>
               </div>
@@ -940,8 +935,8 @@ export default function App() {
         <section id="sample-library" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
             eyebrow="Sample Library"
-            title="The public Google Drive folder is embedded as the live source library"
-            text="This section keeps the portfolio clean while still giving direct access to your real work samples."
+            title="Work sample folder"
+            text="Public source materials used to support the portfolio."
           />
 
           <div className="mt-10">
@@ -952,8 +947,8 @@ export default function App() {
         <section id="additional-projects" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
             eyebrow="Additional Digital Projects"
-            title="A curated secondary layer shows range without competing with the strongest case studies"
-            text="These projects support the main narrative without turning the portfolio into an archive."
+            title="Additional project range"
+            text="A broader view of related digital and operational work."
           />
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -971,9 +966,9 @@ export default function App() {
 
         <section id="visual-design" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
-            eyebrow="Visual Design & Communication"
-            title="Visual communication work is kept separate from the main systems-led proof"
-            text="This preserves the primary positioning while still showing breadth."
+            eyebrow="Visual Design"
+            title="Visual communication"
+            text="Supporting work across communication, presentation, and graphic output."
           />
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -992,8 +987,8 @@ export default function App() {
         <section id="documents" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
             eyebrow="Documents"
-            title="CV and motivation letter are embedded as supporting materials"
-            text="Both documents are connected directly inside the portfolio."
+            title="CV and motivation letter"
+            text="Supporting documents available directly inside the portfolio."
           />
 
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
@@ -1010,8 +1005,8 @@ export default function App() {
         <section id="about" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
             eyebrow="About"
-            title="A multidisciplinary profile with a clear strategic frame"
-            text="The profile connects digital experience, systems design, workflow structure, communication, and operational clarity."
+            title="A multidisciplinary profile"
+            text="Digital experience, systems design, workflow structure, communication, and operational clarity."
           />
 
           <div className="mt-10 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
@@ -1053,9 +1048,6 @@ export default function App() {
                 <h2 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 md:text-4xl">
                   I’m open to relevant opportunities, collaborations, and professional conversations.
                 </h2>
-                <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-600">
-                  This section is intentionally simple and professional.
-                </p>
               </div>
 
               <div className="grid gap-4">
