@@ -94,6 +94,7 @@ const FEATURED_CASES = [
     relevance:
       'Digital product thinking, information structure, and search-focused UX.',
     sensitive: false,
+    visual: '/images/AI_student_searching_EXAMPLES_06_09_2025-01.jpg',
   },
   {
     id: 'rsuRedesign',
@@ -434,6 +435,58 @@ function SampleLibraryCard() {
           title="Work Samples Library"
           className="h-full w-full"
         />
+      </div>
+    </div>
+  );
+}
+
+function CaseVisual({ selectedCase }) {
+  if (selectedCase.visual) {
+    return (
+      <div className="overflow-hidden rounded-[24px] border border-neutral-200 bg-white">
+        <img
+          src={selectedCase.visual}
+          alt={selectedCase.title}
+          className="h-auto w-full object-cover"
+        />
+      </div>
+    );
+  }
+
+  if (selectedCase.sensitive) {
+    return (
+      <div
+        className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-6"
+        data-cursor="interactive"
+      >
+        <div className="flex h-[280px] items-center justify-center text-center">
+          <div className="max-w-sm">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-white">
+              <Lock className="h-6 w-6 text-neutral-500" />
+            </div>
+            <p className="text-base font-medium text-neutral-900">
+              Sensitive visual material is not shown in the public version.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-6"
+      data-cursor="interactive"
+    >
+      <div className="flex h-[280px] items-center justify-center text-center">
+        <div className="max-w-sm">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-white">
+            <FolderOpen className="h-6 w-6 text-neutral-500" />
+          </div>
+          <p className="text-base font-medium text-neutral-900">
+            Final visuals can be selected from the sample library.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -840,34 +893,7 @@ export default function App() {
                   </div>
 
                   <div className="space-y-6">
-                    <div
-                      className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-6"
-                      data-cursor="interactive"
-                    >
-                      <div className="flex h-[280px] items-center justify-center text-center">
-                        <div className="max-w-sm">
-                          {selectedCase.sensitive ? (
-                            <>
-                              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-white">
-                                <Lock className="h-6 w-6 text-neutral-500" />
-                              </div>
-                              <p className="text-base font-medium text-neutral-900">
-                                Sensitive visual material is not shown in the public version.
-                              </p>
-                            </>
-                          ) : (
-                            <>
-                              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-white">
-                                <FolderOpen className="h-6 w-6 text-neutral-500" />
-                              </div>
-                              <p className="text-base font-medium text-neutral-900">
-                                Final visuals can be selected from the sample library.
-                              </p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    <CaseVisual selectedCase={selectedCase} />
 
                     <InfoCard>
                       <strong className="font-medium text-neutral-900">Process</strong>
