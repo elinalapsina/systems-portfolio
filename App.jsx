@@ -3,7 +3,6 @@ import {
   Menu,
   X,
   ArrowRight,
-  ChevronRight,
   Mail,
   Phone,
   MapPin,
@@ -719,19 +718,18 @@ export default function App() {
             </div>
           </div>
         ) : null}
+
       </nav>
 
       <main className="mx-auto max-w-7xl px-4 pb-24 pt-24 sm:px-6 lg:px-8">
-        <section id="home" className="scroll-mt-24 pb-20 pt-8 md:pb-28 md:pt-14">
-          <div className="grid items-end gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+        <section id="home" className="scroll-mt-24 pb-20 pt-10 md:pb-28 md:pt-20">
+          <div className="grid items-start gap-12 lg:grid-cols-[1.15fr_0.85fr]">
             <div>
-              <div className="mb-5 flex flex-wrap gap-2">
-                <Pill>Case-study-first</Pill>
-                <Pill>Structured portfolio</Pill>
-                <Pill>Light design</Pill>
-              </div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-neutral-400">
+                Portfolio
+              </p>
 
-              <h1 className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-neutral-950 md:text-6xl">
+              <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-neutral-950 md:text-6xl">
                 Digital Experience <span className="text-neutral-400">&</span> Systems Design
               </h1>
 
@@ -762,14 +760,15 @@ export default function App() {
               </div>
             </div>
 
-            <div className="rounded-[32px] border border-neutral-200 bg-neutral-50 p-6" data-cursor="interactive">
-              <p className="text-[11px] uppercase tracking-[0.26em] text-neutral-400">
-                Portfolio focus
-              </p>
-
-              <div className="mt-4 space-y-4">
-                <InfoCard title="Positioning">
-                  A multidisciplinary practice across digital experience, workflow design, system structuring, websites, internal tools, operational logic, and visual communication.
+            <div className="rounded-[32px] border border-neutral-200 bg-neutral-50 p-6">
+              <div className="grid gap-4">
+                <InfoCard title="Core Areas">
+                  <ul className="space-y-2">
+                    <li>Digital experience and interface structure</li>
+                    <li>Workflow and internal systems design</li>
+                    <li>Website architecture and service clarity</li>
+                    <li>Visual communication and document systems</li>
+                  </ul>
                 </InfoCard>
 
                 <InfoCard title="Audience">
@@ -832,7 +831,7 @@ export default function App() {
 
                   <div className="flex flex-wrap gap-2">
                     <Pill>{selectedCase.type}</Pill>
-                    {selectedCase.sensitive ? <Pill>Redacted samples</Pill> : null}
+                    {selectedCase.sensitive ? <Pill>Redacted visuals</Pill> : null}
                   </div>
                 </div>
 
@@ -874,7 +873,10 @@ export default function App() {
                   </div>
 
                   <div className="space-y-6">
-                    <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-6" data-cursor="interactive">
+                    <div
+                      className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-6"
+                      data-cursor="interactive"
+                    >
                       <div className="flex h-[280px] items-center justify-center text-center">
                         <div className="max-w-sm">
                           {selectedCase.sensitive ? (
@@ -883,10 +885,10 @@ export default function App() {
                                 <Lock className="h-6 w-6 text-neutral-500" />
                               </div>
                               <p className="text-base font-medium text-neutral-900">
-                                Redacted visual area
+                                Sensitive materials are intentionally withheld here.
                               </p>
                               <p className="mt-2 text-sm leading-6 text-neutral-500">
-                                Sensitive materials should be anonymized before public insertion.
+                                Public visuals should be added only after careful anonymization.
                               </p>
                             </>
                           ) : (
@@ -895,10 +897,10 @@ export default function App() {
                                 <FolderOpen className="h-6 w-6 text-neutral-500" />
                               </div>
                               <p className="text-base font-medium text-neutral-900">
-                                Curated visual area
+                                Final visuals can be selected from the sample library.
                               </p>
                               <p className="mt-2 text-sm leading-6 text-neutral-500">
-                                Select final screenshots from the sample library and insert them here.
+                                Replace this area with curated screenshots when the final visual set is chosen.
                               </p>
                             </>
                           )}
@@ -925,7 +927,9 @@ export default function App() {
                 </div>
 
                 <div className="mt-8 grid gap-4 md:grid-cols-2">
-                  <InfoCard title="Outcome or Operational Value">{selectedCase.outcome}</InfoCard>
+                  <InfoCard title="Outcome or Operational Value">
+                    {selectedCase.outcome}
+                  </InfoCard>
                   <InfoCard title="Relevance">{selectedCase.relevance}</InfoCard>
                 </div>
               </div>
@@ -1077,7 +1081,10 @@ export default function App() {
                   <div className="mt-2 text-sm text-neutral-950">{CONTACT.phone}</div>
                 </a>
 
-                <div className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4" data-cursor="interactive">
+                <div
+                  className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4"
+                  data-cursor="interactive"
+                >
                   <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-neutral-400">
                     <MapPin size={14} /> Location
                   </div>
@@ -1092,7 +1099,11 @@ export default function App() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <p>© 2026 Elīna Lapsiņa</p>
             <div className="flex items-center gap-5">
-              <a href={`mailto:${CONTACT.email}`} data-cursor="interactive" className="hover:text-neutral-950">
+              <a
+                href={`mailto:${CONTACT.email}`}
+                data-cursor="interactive"
+                className="hover:text-neutral-950"
+              >
                 Email
               </a>
               <a
