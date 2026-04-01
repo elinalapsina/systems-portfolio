@@ -39,8 +39,8 @@ const NAV_ITEMS = [
   { id: 'home', label: 'Home' },
   { id: 'case-studies', label: 'Case Studies' },
   { id: 'sample-library', label: 'Sample Library' },
-  { id: 'additional-projects', label: 'Additional Projects' },
-  { id: 'visual-design', label: 'Visual Design' },
+  { id: 'additional-projects', label: 'Projects' },
+  { id: 'visual-design', label: 'Visual Work' },
   { id: 'documents', label: 'Documents' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
@@ -325,12 +325,9 @@ function driveFolderEmbedUrl(folderId, mode = 'grid') {
   return `https://drive.google.com/embeddedfolderview?id=${folderId}#${mode}`;
 }
 
-function SectionHeading({ eyebrow, title, text }) {
+function SectionHeading({ title, text }) {
   return (
     <div className="max-w-3xl">
-      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.32em] text-neutral-400">
-        {eyebrow}
-      </p>
       <h2 className="text-3xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
         {title}
       </h2>
@@ -351,13 +348,10 @@ function Pill({ children }) {
   );
 }
 
-function InfoCard({ title, children }) {
+function InfoCard({ children }) {
   return (
-    <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5">
-      <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-        {title}
-      </p>
-      <div className="mt-3 text-sm leading-7 text-neutral-600">{children}</div>
+    <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5 text-sm leading-7 text-neutral-600">
+      {children}
     </div>
   );
 }
@@ -401,10 +395,7 @@ function DocumentCard({ title, fileUrl }) {
       <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
         <div className="flex items-center gap-3">
           <FileText className="h-5 w-5 text-neutral-500" />
-          <div>
-            <p className="text-sm font-medium text-neutral-900">{title}</p>
-            <p className="text-xs text-neutral-500">PDF preview</p>
-          </div>
+          <p className="text-sm font-medium text-neutral-900">{title}</p>
         </div>
 
         <a
@@ -431,10 +422,7 @@ function SampleLibraryCard() {
       <div className="flex flex-col gap-4 border-b border-neutral-200 px-5 py-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
           <FolderOpen className="h-5 w-5 text-neutral-500" />
-          <div>
-            <p className="text-sm font-medium text-neutral-900">Work Samples Library</p>
-            <p className="text-xs text-neutral-500">Public Google Drive folder</p>
-          </div>
+          <p className="text-sm font-medium text-neutral-900">Work Samples Library</p>
         </div>
 
         <a
@@ -444,7 +432,7 @@ function SampleLibraryCard() {
           data-cursor="interactive"
           className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-4 py-2 text-xs font-medium text-neutral-800 transition hover:bg-neutral-50"
         >
-          Open in Google Drive <ExternalLink size={14} />
+          Open <ExternalLink size={14} />
         </a>
       </div>
 
@@ -759,28 +747,16 @@ export default function App() {
               </div>
             </div>
 
-            <div className="rounded-[32px] border border-neutral-200 bg-neutral-50 p-6">
-              <div className="grid gap-4">
-                <InfoCard title="Core Areas">
-                  <ul className="space-y-2">
-                    <li>Digital experience and interface structure</li>
-                    <li>Workflow and internal systems design</li>
-                    <li>Website architecture and service clarity</li>
-                    <li>Visual communication and document systems</li>
-                  </ul>
-                </InfoCard>
-
-                <InfoCard title="Audience">
-                  Recruiters, hiring managers, consulting partners, institutions, and digital, UX, systems, operations, and product-adjacent decision-makers.
-                </InfoCard>
-              </div>
+            <div className="rounded-[32px] border border-neutral-200 bg-neutral-50 p-8">
+              <p className="text-lg leading-8 text-neutral-600">
+                Designing digital products, structured workflows, and operational systems with clarity, usability, and strong visual communication.
+              </p>
             </div>
           </div>
         </section>
 
         <section className="pb-20 md:pb-28">
           <SectionHeading
-            eyebrow="Expertise"
             title="A multidisciplinary profile built around clarity, systems, and practical value"
             text="The work brings together digital experience, structure, communication, and operational thinking."
           />
@@ -794,7 +770,6 @@ export default function App() {
 
         <section id="case-studies" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
-            eyebrow="Case Studies"
             title="Selected projects"
             text="A focused view of digital, workflow, and systems-oriented work."
           />
@@ -835,17 +810,24 @@ export default function App() {
                 </div>
 
                 <div className="mt-8 grid gap-4 md:grid-cols-2">
-                  <InfoCard title="Context">{selectedCase.context}</InfoCard>
-                  <InfoCard title="Problem">{selectedCase.problem}</InfoCard>
+                  <InfoCard>
+                    <strong className="font-medium text-neutral-900">Context:</strong> {selectedCase.context}
+                  </InfoCard>
+                  <InfoCard>
+                    <strong className="font-medium text-neutral-900">Problem:</strong> {selectedCase.problem}
+                  </InfoCard>
                   <div className="md:col-span-2">
-                    <InfoCard title="Objective">{selectedCase.objective}</InfoCard>
+                    <InfoCard>
+                      <strong className="font-medium text-neutral-900">Objective:</strong> {selectedCase.objective}
+                    </InfoCard>
                   </div>
                 </div>
 
                 <div className="mt-8 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
                   <div className="space-y-6">
-                    <InfoCard title="My Role">
-                      <ul className="space-y-2">
+                    <InfoCard>
+                      <strong className="font-medium text-neutral-900">My role</strong>
+                      <ul className="mt-3 space-y-2">
                         {selectedCase.role.map((item) => (
                           <li key={item} className="flex gap-3">
                             <span className="mt-2 h-1.5 w-1.5 rounded-full bg-neutral-400" />
@@ -855,10 +837,15 @@ export default function App() {
                       </ul>
                     </InfoCard>
 
-                    <InfoCard title="Users / Audience">{selectedCase.users}</InfoCard>
+                    <InfoCard>
+                      <strong className="font-medium text-neutral-900">Users / audience:</strong> {selectedCase.users}
+                    </InfoCard>
 
-                    <InfoCard title="What Was Designed, Improved, Structured, or Adapted">
-                      <ul className="grid gap-3 sm:grid-cols-2">
+                    <InfoCard>
+                      <strong className="font-medium text-neutral-900">
+                        What was designed, improved, structured, or adapted
+                      </strong>
+                      <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                         {selectedCase.designed.map((item) => (
                           <li
                             key={item}
@@ -901,8 +888,9 @@ export default function App() {
                       </div>
                     </div>
 
-                    <InfoCard title="Process">
-                      <div className="space-y-3">
+                    <InfoCard>
+                      <strong className="font-medium text-neutral-900">Process</strong>
+                      <div className="mt-4 space-y-3">
                         {selectedCase.process.map((item, index) => (
                           <div
                             key={item}
@@ -920,8 +908,12 @@ export default function App() {
                 </div>
 
                 <div className="mt-8 grid gap-4 md:grid-cols-2">
-                  <InfoCard title="Outcome">{selectedCase.outcome}</InfoCard>
-                  <InfoCard title="Relevance">{selectedCase.relevance}</InfoCard>
+                  <InfoCard>
+                    <strong className="font-medium text-neutral-900">Outcome:</strong> {selectedCase.outcome}
+                  </InfoCard>
+                  <InfoCard>
+                    <strong className="font-medium text-neutral-900">Relevance:</strong> {selectedCase.relevance}
+                  </InfoCard>
                 </div>
               </div>
             </article>
@@ -930,7 +922,6 @@ export default function App() {
 
         <section id="sample-library" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
-            eyebrow="Sample Library"
             title="Work sample folder"
             text="Public source materials used to support the portfolio."
           />
@@ -942,7 +933,6 @@ export default function App() {
 
         <section id="additional-projects" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
-            eyebrow="Additional Digital Projects"
             title="Additional project range"
             text="A broader view of related digital and operational work."
           />
@@ -962,7 +952,6 @@ export default function App() {
 
         <section id="visual-design" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
-            eyebrow="Visual Design"
             title="Visual communication"
             text="Supporting work across communication, presentation, and graphic output."
           />
@@ -982,7 +971,6 @@ export default function App() {
 
         <section id="documents" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
-            eyebrow="Documents"
             title="CV and motivation letter"
             text="Supporting documents available directly inside the portfolio."
           />
@@ -1000,7 +988,6 @@ export default function App() {
 
         <section id="about" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
-            eyebrow="About"
             title="A multidisciplinary profile"
             text="Digital experience, systems design, workflow structure, communication, and operational clarity."
           />
@@ -1013,11 +1000,7 @@ export default function App() {
             </div>
 
             <div className="rounded-[30px] border border-neutral-200 bg-neutral-50 p-6 md:p-8">
-              <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                Supporting strengths
-              </p>
-
-              <div className="mt-4 flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3">
                 {[
                   'Computer design foundation',
                   'Digital experience thinking',
@@ -1038,10 +1021,7 @@ export default function App() {
           <div className="overflow-hidden rounded-[34px] border border-neutral-200 bg-neutral-50 p-6 md:p-8 lg:p-10">
             <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.26em] text-neutral-400">
-                  Contact
-                </p>
-                <h2 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 md:text-4xl">
+                <h2 className="text-3xl font-semibold tracking-tight text-neutral-950 md:text-4xl">
                   I’m open to relevant opportunities, collaborations, and professional conversations.
                 </h2>
               </div>
