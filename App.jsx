@@ -1,1096 +1,999 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Menu,
-  X,
-  ArrowRight,
-  Mail,
-  MapPin,
-  Phone,
-  Lock,
-  ExternalLink,
-  FileText,
-  FolderOpen,
-  ChevronRight,
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — Visual Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --surface: #181818;
+    --gold: #c9a96e;
+    --gold-pale: #e8d5b0;
+    --cream: #f5f0e8;
+    --mid: #888880;
+    --border: rgba(201,169,110,0.18);
+    --font-display: 'Cormorant Garant', serif;
+    --font-ui: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
 
-const CONTACT = {
-  email: 'elina.lapsina@gmail.com',
-  phone: '+371 26420023',
-  location: 'Latvia',
-};
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-const GOOGLE_DRIVE = {
-  folderId: '1RXqF2h_xCMTQ9VZIpFFnPwutKIWnIthq',
-  folderUrl:
-    'https://drive.google.com/drive/folders/1RXqF2h_xCMTQ9VZIpFFnPwutKIWnIthq?usp=sharing',
-};
+  html { scroll-behavior: smooth; }
 
-const DOCUMENTS = {
-  cv: {
-    title: 'Curriculum Vitae',
-    fileUrl: '/docs/CV_Elina_Lapsina_01_04_2026.pdf',
-  },
-  motivation: {
-    title: 'Motivation Letter — StudySmarter',
-    fileUrl: '/docs/Motivation_letter_Elina_Lapsina_01_04_2026.pdf',
-  },
-};
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: var(--font-ui);
+    overflow-x: hidden;
+    cursor: none;
+  }
 
-const NAV_ITEMS = [
-  { id: 'home', label: 'Home' },
-  { id: 'case-studies', label: 'Case Studies' },
-  { id: 'sample-library', label: 'Sample Library' },
-  { id: 'additional-projects', label: 'Additional Projects' },
-  { id: 'visual-design', label: 'Visual Design' },
-  { id: 'documents', label: 'Documents' },
-  { id: 'about', label: 'About' },
-  { id: 'contact', label: 'Contact' },
-];
+  /* ─── CUSTOM CURSOR ─── */
+  #cursor {
+    width: 10px; height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.15s ease, opacity 0.3s;
+    transform: translate(-50%, -50%);
+  }
+  #cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(201,169,110,0.5);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+  body:has(a:hover) #cursor-ring,
+  body:has(.work-item:hover) #cursor-ring {
+    transform: translate(-50%, -50%) scale(2.5);
+    background: rgba(201,169,110,0.06);
+    border-color: var(--gold);
+  }
 
-const EXPERTISE = [
-  'Digital Experience Design',
-  'Workflow & Systems Design',
-  'Website & Information Structure',
-  'Internal Tools & Operational Logic',
-  'Cross-Functional Project Leadership',
-  'Visual Communication',
-  'AI-Supported Workflows',
-];
+  /* ─── NOISE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.035;
+    pointer-events: none; z-index: 9990;
+  }
 
-const FEATURED_CASES = [
-  {
-    id: 'tl4',
-    title: 'TL4 Student & University Search Prototype',
-    tag: 'Product / EdTech / Prototype',
-    type: 'Prototype',
-    summary:
-      'A structured discovery concept focused on search logic, navigation clarity, and a more legible student journey across university options.',
-    context:
-      'A discovery-oriented education concept needed a clearer way to help users browse, compare, and understand university options without friction or content overload.',
-    problem:
-      'The main challenge was making a broad set of education options easier to scan, filter, and understand through a cleaner information model and stronger user flow.',
-    objective:
-      'Create a more structured and intuitive search experience that improves clarity, navigation, and decision support for prospective students.',
-    role: [
-      'Concept development',
-      'Information architecture',
-      'Search and filter logic framing',
-      'UX structure and visual hierarchy',
-    ],
-    users: 'Prospective students and users exploring university opportunities.',
-    designed: [
-      'Information structure',
-      'Search logic and filter structure',
-      'Navigation pathways and hierarchy',
-      'A clearer discovery journey',
-    ],
-    process: [
-      'Reduced complexity into clearer navigation blocks',
-      'Prioritized findability and comparison logic',
-      'Structured visual hierarchy to support scanning',
-      'Focused on a clean, product-style discovery experience',
-    ],
-    outcome:
-      'The prototype was intended to support clearer discovery, more confident exploration, and a more structured path through education options.',
-    relevance:
-      'Shows digital product thinking, information structure, and search-focused UX.',
-    sensitive: false,
-  },
-  {
-    id: 'rsuRedesign',
-    title: 'RSU Red Cross Medical College Website Redesign',
-    tag: 'Web / Education / Digital Experience',
-    type: 'Website redesign',
-    summary:
-      'An institutional website redesign centered on replacing an older experience with stronger content structure, better usability, and more consistent visual communication.',
-    context:
-      'The existing institutional website needed a more contemporary, navigable, and coherent digital experience that better supported users seeking information.',
-    problem:
-      'The previous experience lacked clarity in structure and made it harder to understand content, navigate sections, and maintain visual consistency.',
-    objective:
-      'Improve digital clarity through a stronger content model, cleaner hierarchy, and a more consistent and trustworthy website experience.',
-    role: [
-      'Information structure',
-      'Design coordination',
-      'Content organization',
-      'Visual consistency support',
-    ],
-    users:
-      'Prospective students, institutional stakeholders, and general website visitors.',
-    designed: [
-      'Content hierarchy',
-      'Navigation pathways',
-      'Institutional usability improvements',
-      'A more consistent web presentation',
-    ],
-    process: [
-      'Reviewed the existing experience and likely user needs',
-      'Reorganized structure for easier information access',
-      'Improved hierarchy, scanning, and section clarity',
-      'Aligned the interface with a more credible institutional feel',
-    ],
-    outcome:
-      'The redesign was intended to improve usability, readability, and overall confidence in the institutional web experience.',
-    relevance:
-      'Demonstrates website structure, institutional clarity, and digital experience improvement.',
-    sensitive: false,
-  },
-  {
-    id: 'rsuRegistration',
-    title: 'RSU Online Registration',
-    tag: 'UX Flow / Education / Service Design',
-    type: 'Registration flow',
-    summary:
-      'A registration flow shaped around clarity, friction reduction, and more practical user guidance through a structured service journey.',
-    context:
-      'The registration process needed a more understandable and less fragmented flow so users could move through steps with greater confidence.',
-    problem:
-      'Users faced friction caused by unclear progression, fragmented structure, or insufficient guidance across the registration experience.',
-    objective:
-      'Design a more legible registration path with stronger step logic, lower friction, and better practical usability.',
-    role: [
-      'Flow structuring',
-      'User journey clarification',
-      'Interaction hierarchy',
-      'Documentation and communication support',
-    ],
-    users: 'Applicants or users completing online registration tasks.',
-    designed: [
-      'Registration flow',
-      'Step logic and progression cues',
-      'Screen hierarchy',
-      'A more usable service experience',
-    ],
-    process: [
-      'Mapped the journey into clearer stages',
-      'Reduced ambiguity in navigation and progression',
-      'Strengthened hierarchy and action visibility',
-      'Focused on practical completion and reduced confusion',
-    ],
-    outcome:
-      'The structured flow was intended to reduce friction and support a more straightforward completion experience.',
-    relevance:
-      'Shows service-flow thinking, user clarity, and structural UX logic.',
-    sensitive: false,
-  },
-  {
-    id: 'asasEmployeeWorkflow',
-    title: 'ASAS Employee Workflow Management System',
-    tag: 'Internal System / Workflow Design / Operations',
-    type: 'Internal system',
-    summary:
-      'An internal systems-focused project emphasizing workflow visibility, process structure, coordination, and clearer operational logic.',
-    context:
-      'Internal coordination required better visibility and a more structured way to understand tasks, process movement, and day-to-day workflow logic.',
-    problem:
-      'Without clearer system structure, operational processes become fragmented, harder to track, and more difficult to coordinate across roles.',
-    objective:
-      'Create a more understandable internal workflow environment that improves process visibility and supports coordinated execution.',
-    role: [
-      'Workflow structure and logic',
-      'Operational design support',
-      'System organization',
-      'Communication structure',
-    ],
-    users:
-      'Internal teams, coordinators, and staff working inside operational workflows.',
-    designed: [
-      'Workflow visibility',
-      'Task and process organization',
-      'Internal coordination logic',
-      'A clearer operating structure',
-    ],
-    process: [
-      'Translated operational needs into system structure',
-      'Clarified stages, actions, and visibility rules',
-      'Improved how work could be understood and followed',
-      'Balanced practical use with clean internal logic',
-    ],
-    outcome:
-      'The system was intended to support clearer internal coordination, stronger process visibility, and more structured operational work.',
-    relevance:
-      'Strong proof of systems thinking, internal process design, and operational clarity.',
-    sensitive: true,
-  },
-  {
-    id: 'sap1',
-    title: 'Athlete Management System Adaptation (SAP1)',
-    tag: 'System Adaptation / Sports Operations / Workflow',
-    type: 'Adaptation',
-    summary:
-      'A practical system adaptation shaped around user needs, workflow adjustment, and more usable operational organization in a sports context.',
-    context:
-      'An existing system needed adjustment to better match real user needs, organizational structure, and practical day-to-day usage.',
-    problem:
-      'The challenge was not to present a full original build, but to adapt and refine an existing system so it became more useful and better aligned with operational reality.',
-    objective:
-      'Improve fit, usability, and workflow alignment through a careful system adaptation approach.',
-    role: [
-      'Adaptation to organizational needs',
-      'Workflow adjustment',
-      'System organization',
-      'Implementation support',
-    ],
-    users:
-      'Sports operations stakeholders and system users working in an applied performance environment.',
-    designed: [
-      'Adjusted workflow logic',
-      'Organizational fit improvements',
-      'Usability-oriented structural refinements',
-      'A more practical operating setup',
-    ],
-    process: [
-      'Observed where the existing structure created friction',
-      'Adjusted workflows to reflect real usage needs',
-      'Improved clarity in structure and organization',
-      'Kept role framing accurate: adaptation, not overclaiming authorship',
-    ],
-    outcome:
-      'The adaptation was intended to improve practical usability and support a system that better matched operational needs.',
-    relevance:
-      'Shows adaptation thinking, system adjustment, and operational value in a real organizational setting.',
-    sensitive: true,
-  },
-  {
-    id: 'equipmentStore',
-    title: 'Equipment Store Management System',
-    tag: 'Internal Tool / Inventory / Workflow',
-    type: 'Internal tool',
-    summary:
-      'A secondary internal-tool case that demonstrates inventory visibility, process structure, and operational order through a clearer management interface.',
-    context:
-      'Equipment handling and visibility benefit from clearer structure, especially when operational coordination depends on status, tracking, and availability.',
-    problem:
-      'A less structured environment makes equipment and inventory processes harder to oversee, coordinate, and use efficiently.',
-    objective:
-      'Bring more clarity to inventory workflows through a cleaner management structure and a more understandable internal tool experience.',
-    role: [
-      'Internal tool structuring',
-      'Inventory workflow support',
-      'Operational logic',
-      'UI and information organization',
-    ],
-    users:
-      'Internal users handling inventory, equipment visibility, or operational support tasks.',
-    designed: [
-      'Inventory structure',
-      'Status visibility',
-      'Process overview',
-      'A more readable management environment',
-    ],
-    process: [
-      'Reduced operational ambiguity into clearer views',
-      'Organized information for easier tracking',
-      'Focused on practical day-to-day usage',
-      'Positioned the project as part of systems-thinking range',
-    ],
-    outcome:
-      'The system was intended to support more visible, understandable, and manageable inventory operations.',
-    relevance:
-      'Adds proof of inventory logic, internal tools, and structured operational support.',
-    sensitive: true,
-  },
-];
+  /* ─── LOADING SCREEN ─── */
+  #loader {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 9000;
+    display: flex; align-items: center; justify-content: center;
+    animation: loaderFade 0.6s 1.8s forwards ease;
+  }
+  #loader-text {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 300;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    animation: loaderPulse 1.8s ease forwards;
+  }
+  @keyframes loaderPulse {
+    0% { opacity: 0; letter-spacing: 0.8em; }
+    40% { opacity: 1; }
+    80% { opacity: 1; letter-spacing: 0.5em; }
+    100% { opacity: 0; letter-spacing: 0.3em; }
+  }
+  @keyframes loaderFade {
+    to { opacity: 0; pointer-events: none; }
+  }
 
-const ADDITIONAL_PROJECTS = [
-  { title: 'Cars Showroom Operations Management System', type: 'Operations / Internal System' },
-  { title: 'ASAS Corporate Website', type: 'Website / Corporate' },
-  { title: 'ASAS Excellence Consultancy Website', type: 'Website / Consulting' },
-  { title: 'Document Template System for Operational Use', type: 'Documentation / Templates' },
-  { title: 'Sharjah Women’s Sports Club / Olympic Center', type: 'Sports Operations / Digital Support' },
-  { title: 'WHOOP Performance Monitoring Pilot', type: 'Performance Support / Pilot' },
-  { title: 'Mental Health & Sport Psychology Support System', type: 'Support System / Sports' },
-  { title: 'Virtual 3D College Visit', type: 'Digital Experience / Education' },
-  { title: 'Digital Learning Video Series', type: 'Learning Resource / Content System' },
-];
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 2rem 4rem;
+    mix-blend-mode: normal;
+    opacity: 0;
+    animation: fadeDown 0.8s 2.2s forwards ease;
+  }
+  nav::after {
+    content: '';
+    position: absolute; bottom: 0; left: 4rem; right: 4rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--gold-pale);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
 
-const VISUAL_CATEGORIES = [
-  'Print & Graphic Production',
-  'Institutional Communication',
-  'Social Media & Campaign Assets',
-  'Presentation & Document Design',
-  'Templates & Visual Systems',
-  'Brand-Aligned Materials',
-];
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-function cn(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 4rem 4rem;
+    gap: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg-line {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border), transparent);
+    pointer-events: none;
+  }
+  .hero-left { position: relative; }
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 2.3s forwards ease;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 7vw, 7rem);
+    font-weight: 300;
+    line-height: 0.95;
+    color: var(--cream);
+    opacity: 0;
+    animation: fadeUp 0.9s 2.4s forwards ease;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+    display: block;
+  }
+  .hero-sub {
+    margin-top: 2.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    line-height: 1.8;
+    color: var(--mid);
+    max-width: 340px;
+    opacity: 0;
+    animation: fadeUp 0.9s 2.6s forwards ease;
+  }
+  .hero-cta {
+    margin-top: 3rem;
+    display: inline-flex; align-items: center; gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    opacity: 0;
+    animation: fadeUp 0.9s 2.8s forwards ease;
+    transition: gap 0.3s;
+  }
+  .hero-cta:hover { gap: 1.8rem; }
+  .hero-cta::after { content: '→'; font-size: 1rem; }
 
-function scrollToId(id) {
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+  .hero-right {
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 1.2s 2.5s forwards ease;
+  }
+  .hero-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/5;
+    overflow: hidden;
+  }
+  .hero-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(20%) contrast(1.05);
+    transition: transform 8s ease, filter 0.5s;
+  }
+  .hero-img-wrap:hover img { transform: scale(1.04); filter: grayscale(0%) contrast(1.05); }
+  .hero-img-frame {
+    position: absolute; inset: -12px;
+    border: 1px solid var(--border);
+    pointer-events: none;
+  }
+  .hero-img-frame::before, .hero-img-frame::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+  .hero-img-frame::before { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+  .hero-img-frame::after { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+  .hero-img-caption {
+    position: absolute; bottom: -2rem; right: 0;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+  .hero-scroll-hint {
+    position: absolute; bottom: 3rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+    opacity: 0;
+    animation: fadeIn 1s 3.2s forwards ease;
+  }
+  .hero-scroll-hint span {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s 3s infinite ease;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.2); }
+  }
 
-function driveFolderEmbedUrl(folderId, mode = 'grid') {
-  return `https://drive.google.com/embeddedfolderview?id=${folderId}#${mode}`;
-}
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
-function SectionHeading({ eyebrow, title, text }) {
-  return (
-    <div className="max-w-3xl">
-      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.32em] text-neutral-400">
-        {eyebrow}
-      </p>
-      <h2 className="text-3xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
-        {title}
-      </h2>
-      {text && (
-        <p className="mt-5 text-base leading-7 text-neutral-600 md:text-lg">
-          {text}
-        </p>
-      )}
+  /* ─── SECTION COMMON ─── */
+  section { padding: 8rem 4rem; }
+  .section-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-tag::before {
+    content: '';
+    width: 30px; height: 1px;
+    background: var(--gold);
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--cream);
+  }
+  .section-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  /* ─── ABOUT ─── */
+  #about {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 6rem;
+    align-items: start;
+    border-top: 1px solid var(--border);
+  }
+  .about-right { padding-top: 1rem; }
+  .about-body {
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 300;
+    line-height: 1.75;
+    color: rgba(245,240,232,0.8);
+    margin-top: 2rem;
+  }
+  .about-body strong { color: var(--gold-pale); font-weight: 400; }
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-top: 0.5rem;
+  }
+
+  /* ─── WORK GRID ─── */
+  #work { border-top: 1px solid var(--border); }
+  .work-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 5rem;
+  }
+  .work-filter {
+    display: flex; gap: 1.5rem; list-style: none;
+    align-items: center;
+  }
+  .work-filter li {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mid);
+    cursor: none;
+    transition: color 0.2s;
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+  }
+  .work-filter li.active, .work-filter li:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: 80px;
+    gap: 20px;
+  }
+  .work-item {
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+    background: var(--surface);
+  }
+  .work-item:nth-child(1)  { grid-column: 1 / 8;  grid-row: 1 / 7; }
+  .work-item:nth-child(2)  { grid-column: 8 / 13; grid-row: 1 / 5; }
+  .work-item:nth-child(3)  { grid-column: 8 / 13; grid-row: 5 / 9; }
+  .work-item:nth-child(4)  { grid-column: 1 / 5;  grid-row: 7 / 12; }
+  .work-item:nth-child(5)  { grid-column: 5 / 9;  grid-row: 7 / 12; }
+  .work-item:nth-child(6)  { grid-column: 9 / 13; grid-row: 9 / 14; }
+  .work-item:nth-child(7)  { grid-column: 1 / 6;  grid-row: 12 / 16; }
+  .work-item:nth-child(8)  { grid-column: 6 / 9;  grid-row: 12 / 16; }
+
+  .work-item img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.5s;
+    filter: grayscale(30%) brightness(0.85);
+  }
+  .work-item:hover img {
+    transform: scale(1.07);
+    filter: grayscale(0%) brightness(1);
+  }
+  .work-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: flex; align-items: flex-end; padding: 1.8rem;
+  }
+  .work-item:hover .work-overlay { opacity: 1; }
+  .work-meta { transform: translateY(8px); transition: transform 0.4s ease; }
+  .work-item:hover .work-meta { transform: translateY(0); }
+  .work-cat {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.3rem;
+  }
+  .work-name {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: var(--cream);
+  }
+  .work-item-num {
+    position: absolute; top: 1rem; right: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: rgba(245,240,232,0.3);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .work-item:hover .work-item-num { opacity: 1; }
+
+  /* placeholder gradient images */
+  .work-item:nth-child(1) .placeholder { background: linear-gradient(135deg, #1a1208 0%, #3d2c0e 40%, #1e1404 100%); }
+  .work-item:nth-child(2) .placeholder { background: linear-gradient(135deg, #0d1a1a 0%, #0e3030 50%, #061212 100%); }
+  .work-item:nth-child(3) .placeholder { background: linear-gradient(135deg, #1a0d0d 0%, #3d1010 50%, #1a0808 100%); }
+  .work-item:nth-child(4) .placeholder { background: linear-gradient(135deg, #0d0d1a 0%, #1a1a3d 50%, #080812 100%); }
+  .work-item:nth-child(5) .placeholder { background: linear-gradient(135deg, #0f1a0d 0%, #1e3d15 50%, #0a1208 100%); }
+  .work-item:nth-child(6) .placeholder { background: linear-gradient(135deg, #1a0d1a 0%, #3d1040 50%, #120812 100%); }
+  .work-item:nth-child(7) .placeholder { background: linear-gradient(135deg, #1a1a0d 0%, #3d3a10 50%, #121208 100%); }
+  .work-item:nth-child(8) .placeholder { background: linear-gradient(135deg, #0d1a1a 0%, #103d3a 50%, #081210 100%); }
+
+  .placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .placeholder::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(201,169,110,0.08) 0%, transparent 70%);
+  }
+  .placeholder-icon {
+    font-family: var(--font-display);
+    font-size: 4rem;
+    color: rgba(201,169,110,0.12);
+    font-style: italic;
+    font-weight: 300;
+    user-select: none;
+  }
+
+  /* ─── SERVICES ─── */
+  #services {
+    border-top: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    margin-top: 5rem;
+    border: 1px solid var(--border);
+  }
+  .service-card {
+    padding: 3rem 2.5rem;
+    background: var(--bg2);
+    position: relative;
+    transition: background 0.4s;
+    overflow: hidden;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+  }
+  .service-card:hover { background: #141414; }
+  .service-card:hover::before { transform: scaleX(1); }
+  .service-num {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin-bottom: 2rem;
+  }
+  .service-name {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.2;
+    margin-bottom: 1.2rem;
+  }
+  .service-desc {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1.9;
+    letter-spacing: 0.05em;
+    color: var(--mid);
+  }
+
+  /* ─── CLIENTS / MARQUEE ─── */
+  #clients {
+    border-top: 1px solid var(--border);
+    padding: 5rem 0;
+    overflow: hidden;
+  }
+  .clients-label {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 3rem;
+  }
+  .marquee-wrap { position: relative; overflow: hidden; }
+  .marquee-track {
+    display: flex; gap: 5rem;
+    animation: marquee 20s linear infinite;
+    width: max-content;
+  }
+  .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+  .client-name {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: 300;
+    color: rgba(245,240,232,0.2);
+    white-space: nowrap;
+    font-style: italic;
+    letter-spacing: 0.05em;
+    transition: color 0.3s;
+    cursor: default;
+  }
+  .marquee-track:hover .client-name:hover { color: var(--gold-pale); }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ─── CONTACT ─── */
+  #contact {
+    border-top: 1px solid var(--border);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    padding: 10rem 4rem;
+    background: radial-gradient(ellipse at 50% 80%, rgba(201,169,110,0.05) 0%, transparent 60%);
+  }
+  #contact .section-tag { justify-content: center; }
+  #contact .section-tag::before { display: none; }
+  .contact-headline {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7vw, 7rem);
+    font-weight: 300;
+    line-height: 1;
+    color: var(--cream);
+  }
+  .contact-headline em {
+    display: block;
+    font-style: italic;
+    color: var(--gold);
+  }
+  .contact-email {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--mid);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 3px;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .contact-email:hover { color: var(--gold); border-color: var(--gold); }
+  .contact-socials {
+    display: flex; gap: 2rem; list-style: none;
+  }
+  .contact-socials a {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .contact-socials a:hover { color: var(--gold); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 4rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  footer span {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: rgba(136,136,128,0.4);
+  }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.25s; }
+  .reveal-delay-3 { transition-delay: 0.4s; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    nav { padding: 1.5rem 2rem; }
+    nav::after { left: 2rem; right: 2rem; }
+    #hero { grid-template-columns: 1fr; padding: 7rem 2rem 4rem; gap: 3rem; }
+    .hero-bg-line { display: none; }
+    section { padding: 5rem 2rem; }
+    #about { grid-template-columns: 1fr; gap: 3rem; }
+    .work-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 200px; }
+    .work-item { grid-column: auto !important; grid-row: auto !important; }
+    .services-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+    .about-stats { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div id="loader"><span id="loader-text">PORTFOLIO</span></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">Your Name</a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-line"></div>
+  <div class="hero-left">
+    <p class="hero-eyebrow">Visual Designer &amp; Art Director</p>
+    <h1 class="hero-title">
+      Crafting<br>
+      <em>Visual</em>
+      Stories
+    </h1>
+    <p class="hero-sub">
+      A collection of work spanning brand identity, editorial design, and visual experiences — built to leave a lasting impression.
+    </p>
+    <a class="hero-cta" href="#work">View Selected Work</a>
+  </div>
+  <div class="hero-right">
+    <div class="hero-img-wrap">
+      <div class="placeholder" style="background: linear-gradient(135deg, #181206 0%, #2e1e08 45%, #0d0b04 100%); aspect-ratio: 4/5; position: relative;">
+        <div class="placeholder-icon">✦</div>
+        <div style="position:absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(201,169,110,0.025) 40px, rgba(201,169,110,0.025) 41px);"></div>
+      </div>
+      <div class="hero-img-frame"></div>
     </div>
-  );
-}
+    <span class="hero-img-caption">Featured — 2024</span>
+  </div>
+  <div class="hero-scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
 
-function Pill({ children }) {
-  return (
-    <span className="inline-flex rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs text-neutral-700">
-      {children}
-    </span>
-  );
-}
-
-function PreviewCard({ title, subtitle, onClick, sensitive }) {
-  return (
-    <button
-      onClick={onClick}
-      className="group overflow-hidden rounded-[24px] border border-neutral-200 bg-white text-left transition hover:-translate-y-1 hover:shadow-sm"
-    >
-      <div className="relative aspect-[4/3] overflow-hidden bg-neutral-50">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,0,0,0.05),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(0,0,0,0.04),transparent_35%)]" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-neutral-500">
-            {sensitive ? 'Redacted sample' : 'Work sample'}
-          </div>
-        </div>
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-left reveal">
+    <p class="section-tag">About</p>
+    <h2 class="section-title">Design<br>with <em>Intent</em></h2>
+  </div>
+  <div class="about-right reveal reveal-delay-1">
+    <p class="about-body">
+      I'm a designer who believes that <strong>aesthetics and strategy are inseparable</strong>. Every curve, color, and composition serves a purpose — to communicate, to evoke, and to endure.
+    </p>
+    <p class="about-body" style="margin-top: 1.5rem;">
+      With roots in fine art and a sharpness for digital craft, I bring a rare balance of <strong>creative intuition and systematic thinking</strong> to every project I take on.
+    </p>
+    <div class="about-stats">
+      <div class="reveal reveal-delay-1">
+        <div class="stat-num">08+</div>
+        <div class="stat-label">Years of<br>Experience</div>
       </div>
-      <div className="p-5">
-        <p className="text-[11px] uppercase tracking-[0.22em] text-neutral-400">
-          {subtitle}
-        </p>
-        <h3 className="mt-3 text-xl font-medium text-neutral-950">{title}</h3>
-        <div className="mt-4 inline-flex items-center gap-2 text-sm text-neutral-600">
-          Open case study <ChevronRight size={16} />
-        </div>
+      <div class="reveal reveal-delay-2">
+        <div class="stat-num">120</div>
+        <div class="stat-label">Projects<br>Delivered</div>
       </div>
-    </button>
-  );
-}
-
-function DriveFolderEmbed({ folderId, folderUrl, title, mode = 'grid' }) {
-  return (
-    <div className="overflow-hidden rounded-[28px] border border-neutral-200 bg-white">
-      <div className="flex flex-col gap-4 border-b border-neutral-200 px-5 py-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3">
-          <FolderOpen className="h-5 w-5 text-neutral-500" />
-          <div>
-            <p className="text-sm font-medium text-neutral-900">{title}</p>
-            <p className="text-xs text-neutral-500">Embedded Google Drive folder view</p>
-          </div>
-        </div>
-        <a
-          href={folderUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-4 py-2 text-xs font-medium text-neutral-800 transition hover:bg-neutral-50"
-        >
-          Open in Google Drive <ExternalLink size={14} />
-        </a>
-      </div>
-
-      <div className="h-[560px] bg-neutral-50">
-        <iframe
-          src={driveFolderEmbedUrl(folderId, mode)}
-          title={title}
-          className="h-full w-full"
-        />
+      <div class="reveal reveal-delay-3">
+        <div class="stat-num">40+</div>
+        <div class="stat-label">Clients<br>Worldwide</div>
       </div>
     </div>
-  );
-}
+  </div>
+</section>
 
-function DocumentCard({ title, fileUrl }) {
-  return (
-    <div className="overflow-hidden rounded-[28px] border border-neutral-200 bg-white">
-      <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
-        <div className="flex items-center gap-3">
-          <FileText className="h-5 w-5 text-neutral-500" />
-          <div>
-            <p className="text-sm font-medium text-neutral-900">{title}</p>
-            <p className="text-xs text-neutral-500">Embedded preview + direct open</p>
-          </div>
-        </div>
-
-        <a
-          href={fileUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-4 py-2 text-xs font-medium text-neutral-800 transition hover:bg-neutral-50"
-        >
-          Open <ExternalLink size={14} />
-        </a>
-      </div>
-
-      <div className="h-[420px] bg-neutral-50">
-        <iframe src={fileUrl} title={title} className="h-full w-full" />
-      </div>
+<!-- WORK -->
+<section id="work">
+  <div class="work-header reveal">
+    <div>
+      <p class="section-tag">Selected Work</p>
+      <h2 class="section-title">Recent <em>Projects</em></h2>
     </div>
-  );
-}
+    <ul class="work-filter">
+      <li class="active">All</li>
+      <li>Branding</li>
+      <li>Editorial</li>
+      <li>Digital</li>
+    </ul>
+  </div>
 
-export default function Portfolio() {
-  const [activeSection, setActiveSection] = useState('home');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [selectedCaseId, setSelectedCaseId] = useState(FEATURED_CASES[0].id);
+  <div class="work-grid">
+    <div class="work-item reveal">
+      <div class="placeholder" style="background: linear-gradient(135deg, #1a1208 0%, #3d2c0e 40%, #1e1404 100%); width:100%; height:100%;">
+        <div class="placeholder-icon">I</div>
+      </div>
+      <div class="work-overlay">
+        <div class="work-meta">
+          <div class="work-cat">Brand Identity</div>
+          <div class="work-name">Project Title Here</div>
+        </div>
+      </div>
+      <div class="work-item-num">01</div>
+    </div>
+    <div class="work-item reveal reveal-delay-1">
+      <div class="placeholder" style="background: linear-gradient(135deg, #0d1a1a 0%, #0e3030 50%, #061212 100%); width:100%; height:100%;">
+        <div class="placeholder-icon">II</div>
+      </div>
+      <div class="work-overlay">
+        <div class="work-meta">
+          <div class="work-cat">Editorial</div>
+          <div class="work-name">Project Title Here</div>
+        </div>
+      </div>
+      <div class="work-item-num">02</div>
+    </div>
+    <div class="work-item reveal reveal-delay-2">
+      <div class="placeholder" style="background: linear-gradient(135deg, #1a0d0d 0%, #3d1010 50%, #1a0808 100%); width:100%; height:100%;">
+        <div class="placeholder-icon">III</div>
+      </div>
+      <div class="work-overlay">
+        <div class="work-meta">
+          <div class="work-cat">Art Direction</div>
+          <div class="work-name">Project Title Here</div>
+        </div>
+      </div>
+      <div class="work-item-num">03</div>
+    </div>
+    <div class="work-item reveal">
+      <div class="placeholder" style="background: linear-gradient(135deg, #0d0d1a 0%, #1a1a3d 50%, #080812 100%); width:100%; height:100%;">
+        <div class="placeholder-icon">IV</div>
+      </div>
+      <div class="work-overlay">
+        <div class="work-meta">
+          <div class="work-cat">Digital</div>
+          <div class="work-name">Project Title Here</div>
+        </div>
+      </div>
+      <div class="work-item-num">04</div>
+    </div>
+    <div class="work-item reveal reveal-delay-1">
+      <div class="placeholder" style="background: linear-gradient(135deg, #0f1a0d 0%, #1e3d15 50%, #0a1208 100%); width:100%; height:100%;">
+        <div class="placeholder-icon">V</div>
+      </div>
+      <div class="work-overlay">
+        <div class="work-meta">
+          <div class="work-cat">Packaging</div>
+          <div class="work-name">Project Title Here</div>
+        </div>
+      </div>
+      <div class="work-item-num">05</div>
+    </div>
+    <div class="work-item reveal reveal-delay-2">
+      <div class="placeholder" style="background: linear-gradient(135deg, #1a0d1a 0%, #3d1040 50%, #120812 100%); width:100%; height:100%;">
+        <div class="placeholder-icon">VI</div>
+      </div>
+      <div class="work-overlay">
+        <div class="work-meta">
+          <div class="work-cat">Campaign</div>
+          <div class="work-name">Project Title Here</div>
+        </div>
+      </div>
+      <div class="work-item-num">06</div>
+    </div>
+    <div class="work-item reveal">
+      <div class="placeholder" style="background: linear-gradient(135deg, #1a1a0d 0%, #3d3a10 50%, #121208 100%); width:100%; height:100%;">
+        <div class="placeholder-icon">VII</div>
+      </div>
+      <div class="work-overlay">
+        <div class="work-meta">
+          <div class="work-cat">Typography</div>
+          <div class="work-name">Project Title Here</div>
+        </div>
+      </div>
+      <div class="work-item-num">07</div>
+    </div>
+    <div class="work-item reveal reveal-delay-1">
+      <div class="placeholder" style="background: linear-gradient(135deg, #0d1a1a 0%, #103d3a 50%, #081210 100%); width:100%; height:100%;">
+        <div class="placeholder-icon">VIII</div>
+      </div>
+      <div class="work-overlay">
+        <div class="work-meta">
+          <div class="work-cat">Motion</div>
+          <div class="work-name">Project Title Here</div>
+        </div>
+      </div>
+      <div class="work-item-num">08</div>
+    </div>
+  </div>
+</section>
 
-  const selectedCase = useMemo(
-    () => FEATURED_CASES.find((item) => item.id === selectedCaseId) || FEATURED_CASES[0],
-    [selectedCaseId]
-  );
+<!-- SERVICES -->
+<section id="services">
+  <div class="reveal">
+    <p class="section-tag">What I Do</p>
+    <h2 class="section-title">Areas of <em>Expertise</em></h2>
+  </div>
+  <div class="services-grid" style="margin-top: 4rem;">
+    <div class="service-card reveal">
+      <div class="service-num">01 —</div>
+      <h3 class="service-name">Brand<br>Identity</h3>
+      <p class="service-desc">From logo marks to full visual systems — cohesive brand languages that speak clearly and endure over time.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">02 —</div>
+      <h3 class="service-name">Art<br>Direction</h3>
+      <p class="service-desc">Guiding campaigns, photography, and content with a unified visual vision that resonates with the audience.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">03 —</div>
+      <h3 class="service-name">Editorial<br>Design</h3>
+      <p class="service-desc">Magazines, books, and publications designed to balance beauty and readability across every spread.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">04 —</div>
+      <h3 class="service-name">Digital<br>Experiences</h3>
+      <p class="service-desc">Web interfaces and interactive media crafted to feel as considered and deliberate as print.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">05 —</div>
+      <h3 class="service-name">Packaging<br>Design</h3>
+      <p class="service-desc">Three-dimensional design thinking — where shelf presence and brand storytelling converge.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-3">
+      <div class="service-num">06 —</div>
+      <h3 class="service-name">Motion<br>&amp; Visual</h3>
+      <p class="service-desc">Animation, title sequences, and moving image work that gives static ideas a heartbeat.</p>
+    </div>
+  </div>
+</section>
 
-  useEffect(() => {
-    const sections = NAV_ITEMS.map((item) => document.getElementById(item.id)).filter(Boolean);
+<!-- CLIENTS MARQUEE -->
+<section id="clients">
+  <p class="clients-label">Clients &amp; Collaborators</p>
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="client-name">Studio Volta</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">Maison Noir</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">Forma Agency</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">The Edit Group</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">Aurelian Co.</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">Luma Studio</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">Verd Creative</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">Studio Volta</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">Maison Noir</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">Forma Agency</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">The Edit Group</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">Aurelian Co.</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">Luma Studio</span>
+      <span class="client-name">✦</span>
+      <span class="client-name">Verd Creative</span>
+      <span class="client-name">✦</span>
+    </div>
+  </div>
+</section>
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+<!-- CONTACT -->
+<section id="contact">
+  <p class="section-tag">Get in Touch</p>
+  <h2 class="contact-headline reveal">
+    Let's make<br>
+    <em>something</em><br>
+    remarkable.
+  </h2>
+  <a class="contact-email reveal" href="mailto:hello@yourname.com">hello@yourname.com</a>
+  <ul class="contact-socials reveal">
+    <li><a href="#">Instagram</a></li>
+    <li><a href="#">Behance</a></li>
+    <li><a href="#">LinkedIn</a></li>
+    <li><a href="#">Dribbble</a></li>
+  </ul>
+</section>
 
-        if (visible[0]?.target?.id) {
-          setActiveSection(visible[0].target.id);
-        }
-      },
-      {
-        threshold: [0.2, 0.45, 0.7],
-        rootMargin: '-15% 0px -30% 0px',
+<!-- FOOTER -->
+<footer>
+  <span>© 2024 Your Name. All rights reserved.</span>
+  <span>Designed &amp; Built with intention.</span>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
       }
-    );
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  reveals.forEach(el => observer.observe(el));
 
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
+  // Work filter (visual only)
+  document.querySelectorAll('.work-filter li').forEach(li => {
+    li.addEventListener('click', () => {
+      document.querySelectorAll('.work-filter li').forEach(x => x.classList.remove('active'));
+      li.classList.add('active');
+    });
+  });
 
-  const previewCards = FEATURED_CASES.slice(0, 3);
-
-  return (
-    <div className="min-h-screen bg-white text-neutral-900 selection:bg-black selection:text-white">
-      <nav className="fixed inset-x-0 top-0 z-50 border-b border-neutral-200 bg-white/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <button onClick={() => scrollToId('home')} className="text-left">
-            <div className="text-[11px] uppercase tracking-[0.32em] text-neutral-400">
-              Elīna Lapsiņa
-            </div>
-            <div className="mt-1 text-sm font-medium text-neutral-950">
-              Digital Experience & Systems Design
-            </div>
-          </button>
-
-          <div className="hidden items-center gap-2 lg:flex">
-            {NAV_ITEMS.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToId(item.id)}
-                className={cn(
-                  'rounded-full px-4 py-2 text-sm transition',
-                  activeSection === item.id
-                    ? 'bg-black text-white'
-                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950'
-                )}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-
-          <button
-            className="inline-flex rounded-full border border-neutral-200 px-3 py-2 text-sm text-neutral-700 lg:hidden"
-            onClick={() => setMobileMenuOpen((v) => !v)}
-          >
-            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="border-t border-neutral-200 px-4 py-4 lg:hidden"
-            >
-              <div className="flex flex-col gap-2">
-                {NAV_ITEMS.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      scrollToId(item.id);
-                    }}
-                    className={cn(
-                      'rounded-2xl px-4 py-3 text-left text-sm transition',
-                      activeSection === item.id
-                        ? 'bg-black text-white'
-                        : 'bg-neutral-50 text-neutral-700 hover:bg-neutral-100'
-                    )}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
-
-      <main className="mx-auto max-w-7xl px-4 pb-24 pt-24 sm:px-6 lg:px-8">
-        <section id="home" className="scroll-mt-24 pb-20 pt-8 md:pb-28 md:pt-14">
-          <div className="grid items-end gap-10 lg:grid-cols-[1.12fr_0.88fr]">
-            <div>
-              <div className="mb-5 flex flex-wrap gap-2">
-                <Pill>Premium portfolio structure</Pill>
-                <Pill>Case-study-first</Pill>
-                <Pill>Light design preserved</Pill>
-              </div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55 }}
-                className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-neutral-950 md:text-6xl"
-              >
-                Digital Experience <span className="text-neutral-400">&</span> Systems Design
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.05 }}
-                className="mt-6 max-w-2xl text-lg leading-8 text-neutral-700 md:text-xl"
-              >
-                Structured digital experiences, workflows, and systems for education, sport, and international operations.
-              </motion.p>
-
-              <motion.p
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="mt-6 max-w-2xl text-base leading-7 text-neutral-500"
-              >
-                I create digital experiences, internal tools, workflow systems, and structured support environments that help organizations work more clearly, consistently, and effectively.
-              </motion.p>
-
-              <div className="mt-8 flex flex-wrap gap-3">
-                <button
-                  onClick={() => scrollToId('case-studies')}
-                  className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:scale-[1.02]"
-                >
-                  View Case Studies <ArrowRight size={16} />
-                </button>
-                <button
-                  onClick={() => scrollToId('documents')}
-                  className="rounded-full border border-neutral-200 bg-white px-5 py-3 text-sm font-medium text-neutral-900 transition hover:bg-neutral-50"
-                >
-                  View Documents
-                </button>
-              </div>
-            </div>
-
-            <div className="rounded-[32px] border border-neutral-200 bg-neutral-50 p-5">
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] uppercase tracking-[0.26em] text-neutral-400">
-                    Portfolio direction
-                  </div>
-                  <div className="mt-2 text-lg font-medium text-neutral-950">
-                    Featured proof, not a gallery dump
-                  </div>
-                </div>
-                <span className="rounded-full border border-neutral-200 bg-white px-3 py-1 text-[11px] text-neutral-700">
-                  Structured
-                </span>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="aspect-[4/4.2] overflow-hidden rounded-[24px] border border-neutral-200 bg-white">
-                  <div className="flex h-full items-center justify-center bg-[radial-gradient(circle_at_top_left,rgba(0,0,0,0.05),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(0,0,0,0.04),transparent_35%)]">
-                    <div className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-neutral-500">
-                      Curated portfolio architecture
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="rounded-[24px] border border-neutral-200 bg-white p-5">
-                    <p className="text-sm font-medium text-neutral-900">Core positioning</p>
-                    <p className="mt-3 text-sm leading-6 text-neutral-500">
-                      A multidisciplinary practice across digital experience, workflow design, system structuring, websites, internal tools, operational logic, and visual communication.
-                    </p>
-                  </div>
-                  <div className="rounded-[24px] border border-neutral-200 bg-white p-5">
-                    <p className="text-sm font-medium text-neutral-900">Source library</p>
-                    <p className="mt-3 text-sm leading-6 text-neutral-500">
-                      Work samples are connected through your public Google Drive folder and surfaced below as an embedded sample library.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-14 grid gap-5 md:grid-cols-3">
-            {previewCards.map((item) => (
-              <PreviewCard
-                key={item.id}
-                title={item.title}
-                subtitle={item.tag}
-                sensitive={item.sensitive}
-                onClick={() => {
-                  setSelectedCaseId(item.id);
-                  scrollToId('case-studies');
-                }}
-              />
-            ))}
-          </div>
-        </section>
-
-        <section className="pb-20 md:pb-28">
-          <SectionHeading
-            eyebrow="Expertise"
-            title="A multidisciplinary profile built around clarity, systems, and practical value"
-            text="The portfolio should communicate not just what was made, but how problems were structured, how decisions were shaped, and how the work improved clarity and coordination."
-          />
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            {EXPERTISE.map((item) => (
-              <Pill key={item}>{item}</Pill>
-            ))}
-          </div>
-
-          <div className="mt-8 rounded-[30px] border border-neutral-200 bg-neutral-50 p-6 md:p-8">
-            <p className="max-w-4xl text-base leading-8 text-neutral-600">
-              I combine a background in computer design, digital communication, systems building, project leadership, and international operational experience. My work focuses on creating clear, structured, and useful digital and organizational solutions.
-            </p>
-          </div>
-        </section>
-
-        <section id="case-studies" className="scroll-mt-24 pb-20 md:pb-28">
-          <SectionHeading
-            eyebrow="Case Studies"
-            title="The core proof section leads with digital experience, systems thinking, and workflow logic"
-            text="This section presents the strongest projects as structured, well-explained case studies rather than a flat image gallery."
-          />
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-            <aside className="space-y-3">
-              {FEATURED_CASES.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setSelectedCaseId(item.id)}
-                  className={cn(
-                    'w-full rounded-[24px] border p-4 text-left transition duration-200',
-                    selectedCaseId === item.id
-                      ? 'border-black bg-black text-white'
-                      : 'border-neutral-200 bg-white hover:bg-neutral-50'
-                  )}
-                >
-                  <p
-                    className={cn(
-                      'text-[11px] uppercase tracking-[0.24em]',
-                      selectedCaseId === item.id ? 'text-white/60' : 'text-neutral-400'
-                    )}
-                  >
-                    {item.tag}
-                  </p>
-                  <h3 className="mt-2 text-base font-medium">{item.title}</h3>
-                  <p
-                    className={cn(
-                      'mt-2 text-sm leading-6',
-                      selectedCaseId === item.id ? 'text-white/75' : 'text-neutral-500'
-                    )}
-                  >
-                    {item.relevance}
-                  </p>
-                </button>
-              ))}
-            </aside>
-
-            <motion.article
-              key={selectedCase.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35 }}
-              className="overflow-hidden rounded-[32px] border border-neutral-200 bg-white"
-            >
-              <div className="h-1.5 w-full bg-black" />
-
-              <div className="p-6 md:p-8 lg:p-10">
-                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                      {selectedCase.tag}
-                    </p>
-                    <h3 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 md:text-4xl">
-                      {selectedCase.title}
-                    </h3>
-                    <p className="mt-4 max-w-3xl text-base leading-7 text-neutral-600">
-                      {selectedCase.summary}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Pill>{selectedCase.type}</Pill>
-                    {selectedCase.sensitive && <Pill>Redacted samples</Pill>}
-                  </div>
-                </div>
-
-                <div className="mt-8 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5">
-                    <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">Context</p>
-                    <p className="mt-3 text-sm leading-7 text-neutral-600">{selectedCase.context}</p>
-                  </div>
-                  <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5">
-                    <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">Problem</p>
-                    <p className="mt-3 text-sm leading-7 text-neutral-600">{selectedCase.problem}</p>
-                  </div>
-                  <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5 md:col-span-2">
-                    <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">Objective</p>
-                    <p className="mt-3 text-sm leading-7 text-neutral-600">{selectedCase.objective}</p>
-                  </div>
-                </div>
-
-                <div className="mt-8 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-                  <div className="space-y-6">
-                    <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5">
-                      <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">My Role</p>
-                      <ul className="mt-4 space-y-2 text-sm leading-7 text-neutral-600">
-                        {selectedCase.role.map((item) => (
-                          <li key={item} className="flex gap-3">
-                            <span className="mt-2 h-1.5 w-1.5 rounded-full bg-neutral-400" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5">
-                      <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                        Users / Audience
-                      </p>
-                      <p className="mt-3 text-sm leading-7 text-neutral-600">{selectedCase.users}</p>
-                    </div>
-
-                    <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5">
-                      <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                        What Was Designed, Improved, Structured, or Adapted
-                      </p>
-                      <ul className="mt-4 grid gap-3 text-sm leading-7 text-neutral-600 sm:grid-cols-2">
-                        {selectedCase.designed.map((item) => (
-                          <li
-                            key={item}
-                            className="rounded-2xl border border-neutral-200 bg-white px-4 py-3"
-                          >
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div className="overflow-hidden rounded-[24px] border border-neutral-200 bg-neutral-50">
-                      <div className="flex h-[300px] items-center justify-center p-6">
-                        <div className="max-w-sm text-center">
-                          {selectedCase.sensitive ? (
-                            <>
-                              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-white">
-                                <Lock className="h-6 w-6 text-neutral-500" />
-                              </div>
-                              <p className="text-base font-medium text-neutral-900">
-                                Redacted visual placeholder
-                              </p>
-                              <p className="mt-2 text-sm leading-6 text-neutral-500">
-                                Sensitive materials for this case study should be anonymized before insertion.
-                              </p>
-                            </>
-                          ) : (
-                            <>
-                              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-white">
-                                <FolderOpen className="h-6 w-6 text-neutral-500" />
-                              </div>
-                              <p className="text-base font-medium text-neutral-900">
-                                Attach curated sample here
-                              </p>
-                              <p className="mt-2 text-sm leading-6 text-neutral-500">
-                                Use the Google Drive sample library below to choose and place the best visual proof.
-                              </p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5">
-                      <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                        Process / Approach
-                      </p>
-                      <div className="mt-4 space-y-3">
-                        {selectedCase.process.map((item, index) => (
-                          <div
-                            key={item}
-                            className="flex gap-4 rounded-2xl border border-neutral-200 bg-white p-4"
-                          >
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-xs font-semibold text-white">
-                              0{index + 1}
-                            </div>
-                            <p className="text-sm leading-7 text-neutral-600">{item}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-8 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5">
-                    <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                      Outcome or Operational Value
-                    </p>
-                    <p className="mt-3 text-sm leading-7 text-neutral-600">{selectedCase.outcome}</p>
-                  </div>
-                  <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5">
-                    <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                      Relevance
-                    </p>
-                    <p className="mt-3 text-sm leading-7 text-neutral-600">{selectedCase.relevance}</p>
-                  </div>
-                </div>
-
-                <div className="mt-8">
-                  <button
-                    onClick={() => scrollToId('sample-library')}
-                    className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-5 py-3 text-sm font-medium text-neutral-900 transition hover:bg-neutral-50"
-                  >
-                    Browse source samples <ArrowRight size={16} />
-                  </button>
-                </div>
-              </div>
-            </motion.article>
-          </div>
-        </section>
-
-        <section id="sample-library" className="scroll-mt-24 pb-20 md:pb-28">
-          <SectionHeading
-            eyebrow="Sample Library"
-            title="Your public Google Drive folder is embedded as the live source library"
-            text="This keeps the current light design while connecting your real sample source directly into the portfolio."
-          />
-
-          <div className="mt-10 grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-            <DriveFolderEmbed
-              folderId={GOOGLE_DRIVE.folderId}
-              folderUrl={GOOGLE_DRIVE.folderUrl}
-              title="Work Samples — Grid View"
-              mode="grid"
-            />
-
-            <div className="space-y-6">
-              <div className="rounded-[28px] border border-neutral-200 bg-neutral-50 p-6">
-                <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                  How to use this section
-                </p>
-                <div className="mt-4 space-y-3 text-sm leading-7 text-neutral-600">
-                  <p>Use this embedded folder as the live reference point for portfolio samples.</p>
-                  <p>Once you decide which visuals belong to TL4, RSU, ASAS, SAP1, and other projects, they can be inserted as curated case-study images.</p>
-                  <p>Sensitive screens should be blurred or masked before being used publicly.</p>
-                </div>
-              </div>
-
-              <DriveFolderEmbed
-                folderId={GOOGLE_DRIVE.folderId}
-                folderUrl={GOOGLE_DRIVE.folderUrl}
-                title="Work Samples — List View"
-                mode="list"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section id="additional-projects" className="scroll-mt-24 pb-20 md:pb-28">
-          <SectionHeading
-            eyebrow="Additional Digital Projects"
-            title="A curated secondary layer shows range without competing with the strongest case studies"
-            text="This section remains lighter and supports the main narrative without flattening the portfolio into an archive."
-          />
-
-          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {ADDITIONAL_PROJECTS.map((project) => (
-              <div
-                key={project.title}
-                className="rounded-[26px] border border-neutral-200 bg-white p-5 transition hover:-translate-y-1 hover:shadow-sm"
-              >
-                <div className="aspect-[4/3] overflow-hidden rounded-[22px] border border-neutral-200 bg-neutral-50">
-                  <div className="flex h-full items-center justify-center">
-                    <span className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-neutral-500">
-                      Curated project sample
-                    </span>
-                  </div>
-                </div>
-                <p className="mt-5 text-[11px] uppercase tracking-[0.22em] text-neutral-400">
-                  {project.type}
-                </p>
-                <h3 className="mt-3 text-lg font-medium text-neutral-950">{project.title}</h3>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section id="visual-design" className="scroll-mt-24 pb-20 md:pb-28">
-          <SectionHeading
-            eyebrow="Visual Design & Communication"
-            title="Visual range is presented clearly, but kept separate from the main systems-led proof"
-            text="This section proves breadth in graphic and communication work while protecting the primary positioning of the portfolio."
-          />
-
-          <div className="mt-10 grid gap-4 lg:grid-cols-2">
-            {VISUAL_CATEGORIES.map((category) => (
-              <div
-                key={category}
-                className="rounded-[28px] border border-neutral-200 bg-white p-6"
-              >
-                <div className="mb-5 flex items-center justify-between gap-4">
-                  <h3 className="text-xl font-medium text-neutral-950">{category}</h3>
-                  <span className="text-xs text-neutral-400">Gallery category</span>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-3">
-                  {[1, 2, 3].map((item) => (
-                    <div
-                      key={item}
-                      className="aspect-square overflow-hidden rounded-[22px] border border-neutral-200 bg-neutral-50"
-                    >
-                      <div className="flex h-full items-center justify-center">
-                        <span className="rounded-full border border-neutral-200 bg-white px-3 py-2 text-[10px] uppercase tracking-[0.22em] text-neutral-500">
-                          Sample slot
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section id="documents" className="scroll-mt-24 pb-20 md:pb-28">
-          <SectionHeading
-            eyebrow="Documents"
-            title="CV and motivation letter are embedded as supporting materials"
-            text="Both documents are connected directly in the portfolio and open inside the site."
-          />
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-2">
-            <DocumentCard title={DOCUMENTS.cv.title} fileUrl={DOCUMENTS.cv.fileUrl} />
-            <DocumentCard title={DOCUMENTS.motivation.title} fileUrl={DOCUMENTS.motivation.fileUrl} />
-          </div>
-        </section>
-
-        <section id="about" className="scroll-mt-24 pb-20 md:pb-28">
-          <SectionHeading
-            eyebrow="About"
-            title="A multidisciplinary profile with a clear strategic frame"
-            text="The goal here is not to sound inflated. It should explain the range clearly, connect the disciplines intelligently, and show why that combination is valuable."
-          />
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="rounded-[30px] border border-neutral-200 bg-neutral-50 p-6 md:p-8">
-              <p className="text-base leading-8 text-neutral-600">
-                I am a multidisciplinary professional working across digital experience, systems design, workflow structuring, website development, operational logic, and visual communication. My background combines computer design, digital communication, project leadership, and international high-performance operations. I focus on creating structured and useful solutions that improve clarity, coordination, and performance.
-              </p>
-            </div>
-
-            <div className="rounded-[30px] border border-neutral-200 bg-neutral-50 p-6 md:p-8">
-              <p className="text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                Supporting strengths
-              </p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                {[
-                  'Computer design foundation',
-                  'Digital experience thinking',
-                  'Systems design',
-                  'Workflow structuring',
-                  'Project leadership',
-                  'International experience',
-                  'AI-supported work methods',
-                ].map((item) => (
-                  <Pill key={item}>{item}</Pill>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="contact" className="scroll-mt-24 pb-8">
-          <div className="overflow-hidden rounded-[34px] border border-neutral-200 bg-neutral-50 p-6 md:p-8 lg:p-10">
-            <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.26em] text-neutral-400">Contact</p>
-                <h2 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 md:text-4xl">
-                  I’m open to relevant opportunities, collaborations, and professional conversations.
-                </h2>
-                <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-600">
-                  This section is intentionally simple and professional, with your real contact details already included.
-                </p>
-              </div>
-
-              <div className="grid gap-4">
-                <a
-                  href={`mailto:${CONTACT.email}`}
-                  className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4 transition hover:bg-neutral-50"
-                >
-                  <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                    <Mail size={14} /> Email
-                  </div>
-                  <div className="mt-2 text-sm text-neutral-950">{CONTACT.email}</div>
-                </a>
-
-                <a
-                  href={`tel:${CONTACT.phone.replace(/\s+/g, '')}`}
-                  className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4 transition hover:bg-neutral-50"
-                >
-                  <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                    <Phone size={14} /> Phone
-                  </div>
-                  <div className="mt-2 text-sm text-neutral-950">{CONTACT.phone}</div>
-                </a>
-
-                <div className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4">
-                  <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-neutral-400">
-                    <MapPin size={14} /> Location
-                  </div>
-                  <div className="mt-2 text-sm text-neutral-950">{CONTACT.location}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <footer className="mt-10 border-t border-neutral-200 py-8 text-sm text-neutral-500">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <p>© 2026 Elīna Lapsiņa. Portfolio built as a one-file React artifact.</p>
-            <div className="flex items-center gap-5">
-              <a href={`mailto:${CONTACT.email}`} className="hover:text-neutral-950">
-                Email
-              </a>
-              <a href={`tel:${CONTACT.phone.replace(/\s+/g, '')}`} className="hover:text-neutral-950">
-                Phone
-              </a>
-            </div>
-          </div>
-        </footer>
-      </main>
-    </div>
-  );
-}
+  // Parallax hero on mouse
+  const heroRight = document.querySelector('.hero-right');
+  document.addEventListener('mousemove', e => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 12;
+    const y = (e.clientY / window.innerHeight - 0.5) * 8;
+    if (heroRight) heroRight.style.transform = `translate(${x}px, ${y}px)`;
+  });
+</script>
+</body>
+</html>
