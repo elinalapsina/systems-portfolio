@@ -10,6 +10,8 @@ import {
   ExternalLink,
   FolderOpen,
   Lock,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 const CONTACT = {
@@ -94,7 +96,12 @@ const FEATURED_CASES = [
     relevance:
       'Digital product thinking, information structure, and search-focused UX.',
     sensitive: false,
-    visual: '/images/AI_student_searching_EXAMPLES_06_09_2025-01.jpg',
+    visuals: [
+      {
+        src: '/images/AI_student_searching_EXAMPLES_06_09_2025-01.jpg',
+        alt: 'TL4 Student & University Search Prototype',
+      },
+    ],
   },
   {
     id: 'rsuRedesign',
@@ -134,6 +141,12 @@ const FEATURED_CASES = [
     relevance:
       'Website structure, institutional clarity, and digital experience improvement.',
     sensitive: false,
+    visuals: [
+      {
+        src: '/images/Labojumi_JAUNAJAI_www_27_12_2016.jpg',
+        alt: 'RSU Red Cross Medical College Website Redesign',
+      },
+    ],
   },
   {
     id: 'rsuRegistration',
@@ -172,6 +185,7 @@ const FEATURED_CASES = [
     relevance:
       'Service-flow thinking, user clarity, and structural UX logic.',
     sensitive: false,
+    visuals: [],
   },
   {
     id: 'asasEmployeeWorkflow',
@@ -211,6 +225,7 @@ const FEATURED_CASES = [
     relevance:
       'Systems thinking, internal process design, and operational clarity.',
     sensitive: true,
+    visuals: [],
   },
   {
     id: 'sap1',
@@ -250,6 +265,7 @@ const FEATURED_CASES = [
     relevance:
       'System adjustment and operational adaptation in a real context.',
     sensitive: true,
+    visuals: [],
   },
   {
     id: 'equipmentStore',
@@ -289,6 +305,7 @@ const FEATURED_CASES = [
     relevance:
       'Inventory logic, internal tools, and structured operational support.',
     sensitive: true,
+    visuals: [],
   },
 ];
 
@@ -440,15 +457,60 @@ function SampleLibraryCard() {
   );
 }
 
-function CaseVisual({ selectedCase }) {
-  if (selectedCase.visual) {
+function CaseVisual({ selectedCase, onOpenLightbox }) {
+  const visuals = selectedCase.visuals || [];
+
+  if (visuals.length > 0) {
     return (
-      <div className="overflow-hidden rounded-[24px] border border-neutral-200 bg-white">
-        <img
-          src={selectedCase.visual}
-          alt={selectedCase.title}
-          className="h-auto w-full object-cover"
-        />
+      <div className="space-y-4">
+        <div className="overflow-hidden rounded-[24px] border border-neutral-200 bg-white">
+          <button
+            type="button"
+            onClick={() => onOpenLightbox(0)}
+            data-cursor="interactive"
+            className="block w-full text-left"
+          >
+            <img
+              src={visuals[0].src}
+              alt={visuals[0].alt || selectedCase.title}
+              className="h-auto w-full object-cover transition duration-300 hover:scale-[1.01]"
+            />
+          </button>
+        </div>
+
+        {visuals.length > 1 ? (
+          <div className="grid grid-cols-2 gap-4">
+            {visuals.slice(1).map((visual, index) => (
+              <button
+                key={`${visual.src}-${index}`}
+                type="button"
+                onClick={() => onOpenLightbox(index + 1)}
+                data-cursor="interactive"
+                className="overflow-hidden rounded-[20px] border border-neutral-200 bg-white"
+              >
+                <img
+                  src={visual.src}
+                  alt={visual.alt || selectedCase.title}
+                  className="h-40 w-full object-cover transition duration-300 hover:scale-[1.02]"
+                />
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-neutral-500">
+            {visuals.length} visual{visuals.length > 1 ? 's' : ''}
+          </p>
+          <button
+            type="button"
+            onClick={() => onOpenLightbox(0)}
+            data-cursor="interactive"
+            className="rounded-full border border-neutral-200 px-4 py-2 text-xs font-medium text-neutral-900 transition hover:bg-neutral-50"
+          >
+            Open gallery
+          </button>
+        </div>
       </div>
     );
   }
@@ -487,6 +549,88 @@ function CaseVisual({ selectedCase }) {
             Final visuals can be selected from the sample library.
           </p>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function Lightbox({ visuals, initialIndex, onClose }) {
+  const [index, setIndex] = useState(initialIndex);
+
+  useEffect(() => {
+    setIndex(initialIndex);
+  }, [initialIndex]);
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') {
+        setIndex((prev) => (prev + 1) % visuals.length);
+      }
+      if (e.key === 'ArrowLeft') {
+        setIndex((prev) => (prev - 1 + visuals.length) % visuals.length);
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [onClose, visuals.length]);
+
+  if (!visuals.length) return null;
+
+  const current = visuals[index];
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm">
+      <div className="absolute right-4 top-4 flex items-center gap-3">
+        <div className="rounded-full bg-white/10 px-4 py-2 text-sm text-white">
+          {index + 1} / {visuals.length}
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          data-cursor="interactive"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black"
+        >
+          <X size={18} />
+        </button>
+      </div>
+
+      {visuals.length > 1 ? (
+        <>
+          <button
+            type="button"
+            onClick={() =>
+              setIndex((prev) => (prev - 1 + visuals.length) % visuals.length)
+            }
+            data-cursor="interactive"
+            className="absolute left-4 top-1/2 z-[101] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black"
+          >
+            <ChevronLeft size={20} />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIndex((prev) => (prev + 1) % visuals.length)}
+            data-cursor="interactive"
+            className="absolute right-4 top-1/2 z-[101] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </>
+      ) : null}
+
+      <div className="flex h-full items-center justify-center px-6 py-20">
+        <img
+          src={current.src}
+          alt={current.alt || 'Project visual'}
+          className="max-h-full max-w-full rounded-[20px] object-contain shadow-2xl"
+        />
       </div>
     </div>
   );
@@ -653,10 +797,19 @@ export default function App() {
   const [activeSection, setActiveSection] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedCaseId, setSelectedCaseId] = useState(FEATURED_CASES[0].id);
+  const [lightboxState, setLightboxState] = useState({
+    open: false,
+    caseId: null,
+    index: 0,
+  });
 
   const selectedCase = useMemo(() => {
     return FEATURED_CASES.find((item) => item.id === selectedCaseId) || FEATURED_CASES[0];
   }, [selectedCaseId]);
+
+  const lightboxCase = useMemo(() => {
+    return FEATURED_CASES.find((item) => item.id === lightboxState.caseId);
+  }, [lightboxState.caseId]);
 
   useEffect(() => {
     document.title = 'Elīna Lapsiņa | Digital Experience & Systems Design';
@@ -684,6 +837,22 @@ export default function App() {
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, []);
+
+  const openLightbox = (index) => {
+    setLightboxState({
+      open: true,
+      caseId: selectedCase.id,
+      index,
+    });
+  };
+
+  const closeLightbox = () => {
+    setLightboxState({
+      open: false,
+      caseId: null,
+      index: 0,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 selection:bg-black selection:text-white">
@@ -893,7 +1062,10 @@ export default function App() {
                   </div>
 
                   <div className="space-y-6">
-                    <CaseVisual selectedCase={selectedCase} />
+                    <CaseVisual
+                      selectedCase={selectedCase}
+                      onOpenLightbox={openLightbox}
+                    />
 
                     <InfoCard>
                       <strong className="font-medium text-neutral-900">Process</strong>
@@ -1092,6 +1264,14 @@ export default function App() {
           </div>
         </footer>
       </main>
+
+      {lightboxState.open && lightboxCase ? (
+        <Lightbox
+          visuals={lightboxCase.visuals || []}
+          initialIndex={lightboxState.index}
+          onClose={closeLightbox}
+        />
+      ) : null}
     </div>
   );
 }
