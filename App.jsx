@@ -29,10 +29,14 @@ const GOOGLE_DRIVE = {
 const DOCUMENTS = [
   {
     title: 'Curriculum Vitae',
+    description:
+      'A concise overview of background, experience, and core areas of work.',
     fileUrl: '/docs/CV_Elina_Lapsina_01_04_2026.pdf',
   },
   {
     title: 'Motivation Letter — StudySmarter',
+    description:
+      'A tailored supporting document outlining fit, interest, and direction.',
     fileUrl: '/docs/Motivation_letter_Elina_Lapsina_01_04_2026.pdf',
   },
 ];
@@ -49,13 +53,20 @@ const NAV_ITEMS = [
 ];
 
 const EXPERTISE = [
-  'Digital Experience Design',
-  'Workflow & Systems Design',
-  'Website & Information Structure',
-  'Internal Tools & Operational Logic',
-  'Cross-Functional Project Leadership',
-  'Visual Communication',
-  'AI-Supported Workflows',
+  'Information architecture',
+  'Website structure',
+  'Workflow systems',
+  'Internal tools',
+  'Operational clarity',
+  'Visual communication',
+  'AI-supported workflows',
+];
+
+const HERO_PROOF = [
+  'Education & EdTech',
+  'Internal systems',
+  'Workflow design',
+  'Web structure',
 ];
 
 const FEATURED_CASES = [
@@ -359,15 +370,6 @@ function cn(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-function scrollToId(id) {
-  const element = document.getElementById(id);
-  if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function driveFolderEmbedUrl(folderId, mode = 'grid') {
-  return `https://drive.google.com/embeddedfolderview?id=${folderId}#${mode}`;
-}
-
 function SectionHeading({ title, text }) {
   return (
     <div className="max-w-3xl">
@@ -385,27 +387,55 @@ function SectionHeading({ title, text }) {
 
 function Pill({ children }) {
   return (
-    <span className="inline-flex rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs text-neutral-700">
+    <span className="inline-flex rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs text-neutral-700">
       {children}
     </span>
   );
 }
 
-function InfoCard({ children }) {
+function InfoCard({ children, className = '' }) {
   return (
-    <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-5 text-sm leading-7 text-neutral-600">
+    <div
+      className={cn(
+        'rounded-[24px] border border-neutral-200 bg-neutral-50 p-5 text-sm leading-7 text-neutral-600',
+        className
+      )}
+    >
       {children}
     </div>
+  );
+}
+
+function NavLink({ item, activeSection, onClick, mobile = false }) {
+  return (
+    <a
+      href={`#${item.id}`}
+      onClick={onClick}
+      aria-current={activeSection === item.id ? 'page' : undefined}
+      className={cn(
+        mobile
+          ? 'rounded-2xl px-4 py-3 text-left text-sm transition'
+          : 'rounded-full px-4 py-2 text-sm transition',
+        activeSection === item.id
+          ? 'bg-black text-white'
+          : mobile
+            ? 'bg-neutral-50 text-neutral-700 hover:bg-neutral-100'
+            : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950'
+      )}
+    >
+      {item.label}
+    </a>
   );
 }
 
 function CasePreview({ item, active, onClick }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      data-cursor="interactive"
+      aria-pressed={active}
       className={cn(
-        'w-full rounded-[24px] border p-4 text-left transition',
+        'w-full rounded-[24px] border p-4 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2',
         active
           ? 'border-black bg-black text-white'
           : 'border-neutral-200 bg-white hover:bg-neutral-50'
@@ -424,28 +454,29 @@ function CasePreview({ item, active, onClick }) {
   );
 }
 
-function DocumentCard({ title, fileUrl }) {
+function DocumentCard({ title, description, fileUrl }) {
   return (
-    <div className="overflow-hidden rounded-[28px] border border-neutral-200 bg-white">
-      <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
-        <div className="flex items-center gap-3">
-          <FileText className="h-5 w-5 text-neutral-500" />
-          <p className="text-sm font-medium text-neutral-900">{title}</p>
+    <div className="rounded-[28px] border border-neutral-200 bg-white p-6">
+      <div className="flex items-start gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-neutral-200 bg-neutral-50">
+          <FileText className="h-5 w-5 text-neutral-600" />
         </div>
 
-        <a
-          href={fileUrl}
-          target="_blank"
-          rel="noreferrer"
-          data-cursor="interactive"
-          className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-4 py-2 text-xs font-medium text-neutral-800 transition hover:bg-neutral-50"
-        >
-          Open <ExternalLink size={14} />
-        </a>
-      </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-base font-medium text-neutral-950">{title}</h3>
+          <p className="mt-2 text-sm leading-6 text-neutral-600">{description}</p>
 
-      <div className="h-[420px] bg-neutral-50">
-        <iframe src={fileUrl} title={title} className="h-full w-full" />
+          <div className="mt-4">
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-900 transition hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+            >
+              Open document <ExternalLink size={16} />
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -454,29 +485,55 @@ function DocumentCard({ title, fileUrl }) {
 function SampleLibraryCard() {
   return (
     <div className="overflow-hidden rounded-[28px] border border-neutral-200 bg-white">
-      <div className="flex flex-col gap-4 border-b border-neutral-200 px-5 py-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3">
-          <FolderOpen className="h-5 w-5 text-neutral-500" />
-          <p className="text-sm font-medium text-neutral-900">Work Samples Library</p>
+      <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="p-6 md:p-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-neutral-200 bg-neutral-50">
+              <FolderOpen className="h-5 w-5 text-neutral-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-neutral-900">
+                Work Samples Library
+              </p>
+              <p className="text-sm text-neutral-500">Public supporting materials</p>
+            </div>
+          </div>
+
+          <p className="mt-6 max-w-xl text-sm leading-7 text-neutral-600">
+            This folder contains additional public samples that support the portfolio,
+            including website references, interface screenshots, and communication or
+            presentation materials.
+          </p>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Pill>Website examples</Pill>
+            <Pill>System screenshots</Pill>
+            <Pill>Visual communication</Pill>
+            <Pill>Supporting references</Pill>
+          </div>
+
+          <div className="mt-8">
+            <a
+              href={GOOGLE_DRIVE.folderUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+            >
+              Open public folder <ExternalLink size={16} />
+            </a>
+          </div>
         </div>
 
-        <a
-          href={GOOGLE_DRIVE.folderUrl}
-          target="_blank"
-          rel="noreferrer"
-          data-cursor="interactive"
-          className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-4 py-2 text-xs font-medium text-neutral-800 transition hover:bg-neutral-50"
-        >
-          Open <ExternalLink size={14} />
-        </a>
-      </div>
-
-      <div className="h-[620px] bg-neutral-50">
-        <iframe
-          src={driveFolderEmbedUrl(GOOGLE_DRIVE.folderId, 'grid')}
-          title="Work Samples Library"
-          className="h-full w-full"
-        />
+        <div className="border-t border-neutral-200 bg-neutral-50 p-6 md:p-8 lg:border-l lg:border-t-0">
+          <div className="rounded-[24px] border border-neutral-200 bg-white p-5">
+            <p className="text-sm font-medium text-neutral-900">Why this section exists</p>
+            <ul className="mt-4 space-y-3 text-sm leading-6 text-neutral-600">
+              <li>• Adds extra context without overloading the main case studies</li>
+              <li>• Keeps confidential work separated from public-facing examples</li>
+              <li>• Gives recruiters a fast route to more supporting material</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -491,15 +548,19 @@ function CaseVisual({ selectedCase, onOpenLightbox }) {
         <div className="overflow-hidden rounded-[24px] border border-neutral-200 bg-white">
           <button
             type="button"
-            onClick={() => onOpenLightbox(0)}
-            data-cursor="interactive"
-            className="block w-full text-left"
+            onClick={(e) => onOpenLightbox(0, e.currentTarget)}
+            className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-inset"
+            aria-label={`Open gallery for ${selectedCase.title}`}
           >
-            <img
-              src={visuals[0].src}
-              alt={visuals[0].alt || selectedCase.title}
-              className="h-auto w-full object-cover transition duration-300 hover:scale-[1.01]"
-            />
+            <div className="flex aspect-[4/3] items-center justify-center bg-neutral-50 p-3">
+              <img
+                src={visuals[0].src}
+                alt={visuals[0].alt || selectedCase.title}
+                loading="eager"
+                decoding="async"
+                className="max-h-full max-w-full object-contain transition duration-300 motion-reduce:transition-none"
+              />
+            </div>
           </button>
         </div>
 
@@ -509,29 +570,32 @@ function CaseVisual({ selectedCase, onOpenLightbox }) {
               <button
                 key={`${visual.src}-${index}`}
                 type="button"
-                onClick={() => onOpenLightbox(index + 1)}
-                data-cursor="interactive"
-                className="overflow-hidden rounded-[20px] border border-neutral-200 bg-white"
+                onClick={(e) => onOpenLightbox(index + 1, e.currentTarget)}
+                className="overflow-hidden rounded-[20px] border border-neutral-200 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                aria-label={`Open image ${index + 2} for ${selectedCase.title}`}
               >
-                <img
-                  src={visual.src}
-                  alt={visual.alt || selectedCase.title}
-                  className="h-40 w-full object-cover transition duration-300 hover:scale-[1.02]"
-                />
+                <div className="flex aspect-[4/3] items-center justify-center bg-neutral-50 p-3">
+                  <img
+                    src={visual.src}
+                    alt={visual.alt || selectedCase.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="max-h-full max-w-full object-contain transition duration-300 motion-reduce:transition-none"
+                  />
+                </div>
               </button>
             ))}
           </div>
         ) : null}
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <p className="text-sm text-neutral-500">
             {visuals.length} visual{visuals.length > 1 ? 's' : ''}
           </p>
           <button
             type="button"
-            onClick={() => onOpenLightbox(0)}
-            data-cursor="interactive"
-            className="rounded-full border border-neutral-200 px-4 py-2 text-xs font-medium text-neutral-900 transition hover:bg-neutral-50"
+            onClick={(e) => onOpenLightbox(0, e.currentTarget)}
+            className="inline-flex min-h-[44px] items-center rounded-full border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-900 transition hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
           >
             Open gallery
           </button>
@@ -542,10 +606,7 @@ function CaseVisual({ selectedCase, onOpenLightbox }) {
 
   if (selectedCase.sensitive) {
     return (
-      <div
-        className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-6"
-        data-cursor="interactive"
-      >
+      <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-6">
         <div className="flex h-[280px] items-center justify-center text-center">
           <div className="max-w-sm">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-white">
@@ -561,17 +622,14 @@ function CaseVisual({ selectedCase, onOpenLightbox }) {
   }
 
   return (
-    <div
-      className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-6"
-      data-cursor="interactive"
-    >
+    <div className="rounded-[24px] border border-neutral-200 bg-neutral-50 p-6">
       <div className="flex h-[280px] items-center justify-center text-center">
         <div className="max-w-sm">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-white">
             <FolderOpen className="h-6 w-6 text-neutral-500" />
           </div>
           <p className="text-base font-medium text-neutral-900">
-            Final visuals can be selected from the sample library.
+            Public visuals are not shown for this case.
           </p>
         </div>
       </div>
@@ -579,21 +637,64 @@ function CaseVisual({ selectedCase, onOpenLightbox }) {
   );
 }
 
-function Lightbox({ visuals, initialIndex, onClose }) {
+function Lightbox({ visuals, initialIndex, onClose, triggerRef, title }) {
   const [index, setIndex] = useState(initialIndex);
+  const dialogRef = useRef(null);
 
   useEffect(() => {
     setIndex(initialIndex);
   }, [initialIndex]);
 
   useEffect(() => {
+    const dialog = dialogRef.current;
+    const previousActive = document.activeElement;
+
+    const getFocusable = () => {
+      if (!dialog) return [];
+      return Array.from(
+        dialog.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((el) => !el.hasAttribute('disabled'));
+    };
+
+    const focusables = getFocusable();
+    if (focusables[0]) {
+      focusables[0].focus();
+    } else if (dialog) {
+      dialog.focus();
+    }
+
     const onKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+
+      if (e.key === 'ArrowRight' && visuals.length > 1) {
+        e.preventDefault();
         setIndex((prev) => (prev + 1) % visuals.length);
       }
-      if (e.key === 'ArrowLeft') {
+
+      if (e.key === 'ArrowLeft' && visuals.length > 1) {
+        e.preventDefault();
         setIndex((prev) => (prev - 1 + visuals.length) % visuals.length);
+      }
+
+      if (e.key === 'Tab') {
+        const items = getFocusable();
+        if (!items.length) return;
+
+        const first = items[0];
+        const last = items[items.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     };
 
@@ -603,218 +704,136 @@ function Lightbox({ visuals, initialIndex, onClose }) {
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       document.body.style.overflow = '';
+
+      if (triggerRef?.current) {
+        triggerRef.current.focus();
+      } else if (previousActive instanceof HTMLElement) {
+        previousActive.focus();
+      }
     };
-  }, [onClose, visuals.length]);
+  }, [onClose, triggerRef, visuals.length]);
 
   if (!visuals.length) return null;
 
   const current = visuals[index];
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm">
-      <div className="absolute right-4 top-4 flex items-center gap-3">
-        <div className="rounded-full bg-white/10 px-4 py-2 text-sm text-white">
-          {index + 1} / {visuals.length}
+    <div
+      className="fixed inset-0 z-[100] bg-black/90 px-4 py-6 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lightbox-title"
+        tabIndex={-1}
+        className="relative flex h-full w-full items-center justify-center"
+      >
+        <h2 id="lightbox-title" className="sr-only">
+          {title} image gallery
+        </h2>
+
+        <div className="absolute right-0 top-0 flex items-center gap-3">
+          <div className="rounded-full bg-white/10 px-4 py-2 text-sm text-white">
+            {index + 1} / {visuals.length}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close gallery"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+          >
+            <X size={18} />
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          data-cursor="interactive"
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black"
-        >
-          <X size={18} />
-        </button>
-      </div>
 
-      {visuals.length > 1 ? (
-        <>
-          <button
-            type="button"
-            onClick={() =>
-              setIndex((prev) => (prev - 1 + visuals.length) % visuals.length)
-            }
-            data-cursor="interactive"
-            className="absolute left-4 top-1/2 z-[101] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black"
-          >
-            <ChevronLeft size={20} />
-          </button>
+        {visuals.length > 1 ? (
+          <>
+            <button
+              type="button"
+              onClick={() =>
+                setIndex((prev) => (prev - 1 + visuals.length) % visuals.length)
+              }
+              aria-label="Previous image"
+              className="absolute left-0 top-1/2 z-[101] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            >
+              <ChevronLeft size={20} />
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setIndex((prev) => (prev + 1) % visuals.length)}
-            data-cursor="interactive"
-            className="absolute right-4 top-1/2 z-[101] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </>
-      ) : null}
+            <button
+              type="button"
+              onClick={() => setIndex((prev) => (prev + 1) % visuals.length)}
+              aria-label="Next image"
+              className="absolute right-0 top-1/2 z-[101] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </>
+        ) : null}
 
-      <div className="flex h-full items-center justify-center px-6 py-20">
-        <img
-          src={current.src}
-          alt={current.alt || 'Project visual'}
-          className="max-h-full max-w-full rounded-[20px] object-contain shadow-2xl"
-        />
+        <div className="flex h-full w-full items-center justify-center px-12 py-16 md:px-20">
+          <img
+            src={current.src}
+            alt={current.alt || 'Project visual'}
+            className="max-h-full max-w-full rounded-[20px] bg-white object-contain shadow-2xl"
+          />
+        </div>
       </div>
     </div>
   );
 }
 
-function CustomCursor() {
-  const dotRef = useRef(null);
-  const ringRef = useRef(null);
-  const mouse = useRef({ x: 0, y: 0 });
-  const ring = useRef({ x: 0, y: 0 });
-  const rafRef = useRef(null);
-
-  const [enabled, setEnabled] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [interactive, setInteractive] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia('(pointer: fine)');
-    const update = () => setEnabled(media.matches);
-    update();
-
-    if (media.addEventListener) {
-      media.addEventListener('change', update);
-      return () => media.removeEventListener('change', update);
-    }
-
-    media.addListener(update);
-    return () => media.removeListener(update);
-  }, []);
-
-  useEffect(() => {
-    if (!enabled) return;
-
-    const move = (e) => {
-      mouse.current.x = e.clientX;
-      mouse.current.y = e.clientY;
-
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
-      }
-
-      setVisible(true);
-    };
-
-    const handleMouseOver = (e) => {
-      const target = e.target.closest(
-        'a, button, iframe, [data-cursor="interactive"]'
-      );
-      setInteractive(Boolean(target));
-    };
-
-    const handleLeave = () => {
-      setVisible(false);
-      setInteractive(false);
-    };
-
-    const handleEnter = () => {
-      setVisible(true);
-    };
-
-    const animateRing = () => {
-      ring.current.x += (mouse.current.x - ring.current.x) * 0.14;
-      ring.current.y += (mouse.current.y - ring.current.y) * 0.14;
-
-      if (ringRef.current) {
-        ringRef.current.style.transform = `translate(${ring.current.x}px, ${ring.current.y}px) translate(-50%, -50%) scale(${interactive ? 2.2 : 1})`;
-      }
-
-      rafRef.current = requestAnimationFrame(animateRing);
-    };
-
-    window.addEventListener('mousemove', move);
-    window.addEventListener('mouseover', handleMouseOver);
-    document.addEventListener('mouseleave', handleLeave);
-    document.addEventListener('mouseenter', handleEnter);
-
-    rafRef.current = requestAnimationFrame(animateRing);
-
-    return () => {
-      window.removeEventListener('mousemove', move);
-      window.removeEventListener('mouseover', handleMouseOver);
-      document.removeEventListener('mouseleave', handleLeave);
-      document.removeEventListener('mouseenter', handleEnter);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, [enabled, interactive]);
-
-  if (!enabled) return null;
-
+function GlobalStyles() {
   return (
-    <>
-      <style>{`
-        @media (pointer: fine) {
-          html, body, a, button, iframe, [data-cursor="interactive"] {
-            cursor: none !important;
-          }
+    <style>{`
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        color: #171717;
+        background: #ffffff;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      a, button, input, textarea, select, iframe {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      :focus-visible {
+        outline: 2px solid #111111;
+        outline-offset: 3px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
         }
 
-        .custom-cursor-dot,
-        .custom-cursor-ring {
-          position: fixed;
-          top: 0;
-          left: 0;
-          pointer-events: none;
-          will-change: transform, opacity;
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
         }
-
-        .custom-cursor-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 9999px;
-          background: #111111;
-          z-index: 9999;
-          transition: opacity 0.25s ease, transform 0.08s ease;
-        }
-
-        .custom-cursor-ring {
-          width: 34px;
-          height: 34px;
-          border-radius: 9999px;
-          border: 1px solid rgba(17, 17, 17, 0.28);
-          background: rgba(17, 17, 17, 0);
-          z-index: 9998;
-          transition:
-            opacity 0.25s ease,
-            background 0.28s ease,
-            border-color 0.28s ease;
-        }
-
-        .custom-cursor-ring-active {
-          background: rgba(17, 17, 17, 0.04);
-          border-color: rgba(17, 17, 17, 0.55);
-        }
-
-        .custom-cursor-visible {
-          opacity: 1;
-        }
-
-        .custom-cursor-hidden {
-          opacity: 0;
-        }
-      `}</style>
-
-      <div
-        ref={dotRef}
-        className={cn(
-          'custom-cursor-dot',
-          visible ? 'custom-cursor-visible' : 'custom-cursor-hidden'
-        )}
-      />
-      <div
-        ref={ringRef}
-        className={cn(
-          'custom-cursor-ring',
-          interactive ? 'custom-cursor-ring-active' : '',
-          visible ? 'custom-cursor-visible' : 'custom-cursor-hidden'
-        )}
-      />
-    </>
+      }
+    `}</style>
   );
 }
 
@@ -827,6 +846,7 @@ export default function App() {
     caseId: null,
     index: 0,
   });
+  const lightboxTriggerRef = useRef(null);
 
   const selectedCase = useMemo(() => {
     return FEATURED_CASES.find((item) => item.id === selectedCaseId) || FEATURED_CASES[0];
@@ -863,7 +883,8 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
-  const openLightbox = (index) => {
+  const openLightbox = (index, triggerEl) => {
+    lightboxTriggerRef.current = triggerEl;
     setLightboxState({
       open: true,
       caseId: selectedCase.id,
@@ -881,107 +902,137 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 selection:bg-black selection:text-white">
-      <CustomCursor />
+      <GlobalStyles />
 
-      <nav className="fixed inset-x-0 top-0 z-50 border-b border-neutral-200 bg-white/90 backdrop-blur-xl">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-full focus:bg-black focus:px-4 focus:py-2 focus:text-sm focus:text-white"
+      >
+        Skip to content
+      </a>
+
+      <nav
+        aria-label="Primary"
+        className="fixed inset-x-0 top-0 z-50 border-b border-neutral-200 bg-white/90 backdrop-blur-xl"
+      >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <button
-            onClick={() => scrollToId('home')}
-            data-cursor="interactive"
-            className="text-left"
-          >
+          <a href="#home" className="text-left">
             <div className="text-[11px] uppercase tracking-[0.32em] text-neutral-400">
               Elīna Lapsiņa
             </div>
             <div className="mt-1 text-sm font-medium text-neutral-950">
               Digital Experience & Systems Design
             </div>
-          </button>
+          </a>
 
           <div className="hidden items-center gap-2 lg:flex">
             {NAV_ITEMS.map((item) => (
-              <button
+              <NavLink
                 key={item.id}
-                onClick={() => scrollToId(item.id)}
-                data-cursor="interactive"
-                className={cn(
-                  'rounded-full px-4 py-2 text-sm transition',
-                  activeSection === item.id
-                    ? 'bg-black text-white'
-                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950'
-                )}
-              >
-                {item.label}
-              </button>
+                item={item}
+                activeSection={activeSection}
+              />
             ))}
           </div>
 
           <button
-            data-cursor="interactive"
-            className="inline-flex rounded-full border border-neutral-200 px-3 py-2 text-sm text-neutral-700 lg:hidden"
+            type="button"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
+            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-neutral-200 px-3 py-2 text-sm text-neutral-700 lg:hidden"
             onClick={() => setMobileMenuOpen((value) => !value)}
           >
+            <span className="sr-only">Toggle menu</span>
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
 
         {mobileMenuOpen ? (
-          <div className="border-t border-neutral-200 px-4 py-4 lg:hidden">
+          <div id="mobile-menu" className="border-t border-neutral-200 px-4 py-4 lg:hidden">
             <div className="flex flex-col gap-2">
               {NAV_ITEMS.map((item) => (
-                <button
+                <NavLink
                   key={item.id}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    scrollToId(item.id);
-                  }}
-                  data-cursor="interactive"
-                  className={cn(
-                    'rounded-2xl px-4 py-3 text-left text-sm transition',
-                    activeSection === item.id
-                      ? 'bg-black text-white'
-                      : 'bg-neutral-50 text-neutral-700 hover:bg-neutral-100'
-                  )}
-                >
-                  {item.label}
-                </button>
+                  item={item}
+                  activeSection={activeSection}
+                  mobile
+                  onClick={() => setMobileMenuOpen(false)}
+                />
               ))}
             </div>
           </div>
         ) : null}
       </nav>
 
-      <main className="mx-auto max-w-7xl px-4 pb-24 pt-24 sm:px-6 lg:px-8">
+      <main id="main-content" className="mx-auto max-w-7xl px-4 pb-24 pt-24 sm:px-6 lg:px-8">
         <section id="home" className="scroll-mt-24 pb-20 pt-10 md:pb-28 md:pt-20">
-          <div className="max-w-4xl">
-            <h1 className="text-4xl font-semibold leading-tight tracking-tight text-neutral-950 md:text-6xl">
-              Digital Experience <span className="text-neutral-400">&</span> Systems Design
-            </h1>
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+            <div className="max-w-4xl">
+              <p className="text-sm font-medium uppercase tracking-[0.24em] text-neutral-400">
+                Digital Experience & Systems Design
+              </p>
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-700 md:text-xl">
-              Structured digital experiences, workflows, and systems for education, sport, and international operations.
-            </p>
+              <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-tight text-neutral-950 md:text-6xl">
+                I design clearer websites, internal tools, and workflow systems for
+                complex organizations.
+              </h1>
 
-            <p className="mt-6 max-w-2xl text-base leading-7 text-neutral-500">
-              I create digital experiences, internal tools, workflow systems, and structured support environments that help organizations work more clearly, consistently, and effectively.
-            </p>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-700 md:text-xl">
+                Structured digital experiences for education, operations, and
+                cross-functional work.
+              </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <button
-                onClick={() => scrollToId('case-studies')}
-                data-cursor="interactive"
-                className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:scale-[1.02]"
-              >
-                View Case Studies <ArrowRight size={16} />
-              </button>
+              <p className="mt-6 max-w-2xl text-base leading-7 text-neutral-500">
+                My work focuses on information clarity, better navigation, cleaner
+                system logic, and more usable environments for real people doing real
+                work.
+              </p>
 
-              <button
-                onClick={() => scrollToId('documents')}
-                data-cursor="interactive"
-                className="rounded-full border border-neutral-200 bg-white px-5 py-3 text-sm font-medium text-neutral-900 transition hover:bg-neutral-50"
-              >
-                View Documents
-              </button>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a
+                  href="#case-studies"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                >
+                  View Case Studies <ArrowRight size={16} />
+                </a>
+
+                <a
+                  href="#contact"
+                  className="inline-flex min-h-[44px] items-center rounded-full border border-neutral-200 bg-white px-5 py-3 text-sm font-medium text-neutral-900 transition hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                >
+                  Contact
+                </a>
+              </div>
+            </div>
+
+            <div className="rounded-[30px] border border-neutral-200 bg-neutral-50 p-6 md:p-8">
+              <p className="text-sm font-medium text-neutral-900">Focus areas</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                {HERO_PROOF.map((item) => (
+                  <Pill key={item}>{item}</Pill>
+                ))}
+              </div>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[22px] border border-neutral-200 bg-white p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-neutral-400">
+                    Core value
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-neutral-700">
+                    Turning complexity into clearer structure, hierarchy, and use.
+                  </p>
+                </div>
+
+                <div className="rounded-[22px] border border-neutral-200 bg-white p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-neutral-400">
+                    Typical work
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-neutral-700">
+                    Website redesign, workflow systems, service flows, and internal
+                    tooling support.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -1021,32 +1072,45 @@ export default function App() {
               <div className="h-1.5 w-full bg-black" />
 
               <div className="p-6 md:p-8 lg:p-10">
-                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div className="flex flex-col gap-4">
                   <div>
                     <h3 className="text-3xl font-semibold tracking-tight text-neutral-950 md:text-4xl">
                       {selectedCase.title}
                     </h3>
-                    <p className="mt-4 max-w-3xl text-base leading-7 text-neutral-600">
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Pill>{selectedCase.tag}</Pill>
+                      <Pill>{selectedCase.type}</Pill>
+                      <Pill>
+                        {selectedCase.visuals.length > 0
+                          ? `${selectedCase.visuals.length} public visual${
+                              selectedCase.visuals.length > 1 ? 's' : ''
+                            }`
+                          : selectedCase.sensitive
+                            ? 'Redacted visuals'
+                            : 'No public visuals'}
+                      </Pill>
+                    </div>
+
+                    <p className="mt-5 max-w-3xl text-base leading-7 text-neutral-600">
                       {selectedCase.summary}
                     </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    <Pill>{selectedCase.type}</Pill>
-                    {selectedCase.sensitive ? <Pill>Redacted visuals</Pill> : null}
                   </div>
                 </div>
 
                 <div className="mt-8 grid gap-4 md:grid-cols-2">
                   <InfoCard>
-                    <strong className="font-medium text-neutral-900">Context:</strong> {selectedCase.context}
+                    <strong className="font-medium text-neutral-900">Context:</strong>{' '}
+                    {selectedCase.context}
                   </InfoCard>
                   <InfoCard>
-                    <strong className="font-medium text-neutral-900">Problem:</strong> {selectedCase.problem}
+                    <strong className="font-medium text-neutral-900">Problem:</strong>{' '}
+                    {selectedCase.problem}
                   </InfoCard>
                   <div className="md:col-span-2">
                     <InfoCard>
-                      <strong className="font-medium text-neutral-900">Objective:</strong> {selectedCase.objective}
+                      <strong className="font-medium text-neutral-900">Objective:</strong>{' '}
+                      {selectedCase.objective}
                     </InfoCard>
                   </div>
                 </div>
@@ -1066,7 +1130,10 @@ export default function App() {
                     </InfoCard>
 
                     <InfoCard>
-                      <strong className="font-medium text-neutral-900">Users / audience:</strong> {selectedCase.users}
+                      <strong className="font-medium text-neutral-900">
+                        Users / audience:
+                      </strong>{' '}
+                      {selectedCase.users}
                     </InfoCard>
 
                     <InfoCard>
@@ -1113,10 +1180,12 @@ export default function App() {
 
                 <div className="mt-8 grid gap-4 md:grid-cols-2">
                   <InfoCard>
-                    <strong className="font-medium text-neutral-900">Outcome:</strong> {selectedCase.outcome}
+                    <strong className="font-medium text-neutral-900">Outcome:</strong>{' '}
+                    {selectedCase.outcome}
                   </InfoCard>
                   <InfoCard>
-                    <strong className="font-medium text-neutral-900">Relevance:</strong> {selectedCase.relevance}
+                    <strong className="font-medium text-neutral-900">Relevance:</strong>{' '}
+                    {selectedCase.relevance}
                   </InfoCard>
                 </div>
               </div>
@@ -1142,7 +1211,6 @@ export default function App() {
             {ADDITIONAL_PROJECTS.map((project) => (
               <div
                 key={project}
-                data-cursor="interactive"
                 className="rounded-[24px] border border-neutral-200 bg-white p-5"
               >
                 <p className="text-sm font-medium text-neutral-950">{project}</p>
@@ -1161,7 +1229,6 @@ export default function App() {
             {VISUAL_CATEGORIES.map((category) => (
               <div
                 key={category}
-                data-cursor="interactive"
                 className="rounded-[24px] border border-neutral-200 bg-white p-5"
               >
                 <p className="text-sm font-medium text-neutral-950">{category}</p>
@@ -1173,7 +1240,7 @@ export default function App() {
         <section id="documents" className="scroll-mt-24 pb-20 md:pb-28">
           <SectionHeading
             title="Documents"
-            text="Supporting documents available directly inside the portfolio."
+            text="Supporting documents available directly through the portfolio."
           />
 
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
@@ -1181,6 +1248,7 @@ export default function App() {
               <DocumentCard
                 key={document.title}
                 title={document.title}
+                description={document.description}
                 fileUrl={document.fileUrl}
               />
             ))}
@@ -1196,7 +1264,13 @@ export default function App() {
           <div className="mt-10 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
             <div className="rounded-[30px] border border-neutral-200 bg-neutral-50 p-6 md:p-8">
               <p className="text-base leading-8 text-neutral-600">
-                I am a multidisciplinary professional working across digital experience, systems design, workflow structuring, website development, operational logic, and visual communication. My background combines computer design, digital communication, project leadership, and international high-performance operations. I focus on creating structured and useful solutions that improve clarity, coordination, and performance.
+                I am a multidisciplinary professional working across digital
+                experience, systems design, workflow structuring, website
+                development, operational logic, and visual communication. My
+                background combines computer design, digital communication, project
+                leadership, and international high-performance operations. I focus
+                on creating structured and useful solutions that improve clarity,
+                coordination, and performance.
               </p>
             </div>
 
@@ -1223,15 +1297,15 @@ export default function App() {
             <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
               <div>
                 <h2 className="text-3xl font-semibold tracking-tight text-neutral-950 md:text-4xl">
-                  I’m open to relevant opportunities, collaborations, and professional conversations.
+                  I’m open to relevant opportunities, collaborations, and
+                  professional conversations.
                 </h2>
               </div>
 
               <div className="grid gap-4">
                 <a
                   href={`mailto:${CONTACT.email}`}
-                  data-cursor="interactive"
-                  className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4 transition hover:bg-neutral-50"
+                  className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4 transition hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                 >
                   <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-neutral-400">
                     <Mail size={14} /> Email
@@ -1241,8 +1315,7 @@ export default function App() {
 
                 <a
                   href={`tel:${CONTACT.phone.replace(/\s+/g, '')}`}
-                  data-cursor="interactive"
-                  className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4 transition hover:bg-neutral-50"
+                  className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4 transition hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                 >
                   <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-neutral-400">
                     <Phone size={14} /> Phone
@@ -1250,10 +1323,7 @@ export default function App() {
                   <div className="mt-2 text-sm text-neutral-950">{CONTACT.phone}</div>
                 </a>
 
-                <div
-                  className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4"
-                  data-cursor="interactive"
-                >
+                <div className="rounded-[22px] border border-neutral-200 bg-white px-5 py-4">
                   <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-neutral-400">
                     <MapPin size={14} /> Location
                   </div>
@@ -1268,16 +1338,11 @@ export default function App() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <p>© 2026 Elīna Lapsiņa</p>
             <div className="flex items-center gap-5">
-              <a
-                href={`mailto:${CONTACT.email}`}
-                data-cursor="interactive"
-                className="hover:text-neutral-950"
-              >
+              <a href={`mailto:${CONTACT.email}`} className="hover:text-neutral-950">
                 Email
               </a>
               <a
                 href={`tel:${CONTACT.phone.replace(/\s+/g, '')}`}
-                data-cursor="interactive"
                 className="hover:text-neutral-950"
               >
                 Phone
@@ -1292,6 +1357,8 @@ export default function App() {
           visuals={lightboxCase.visuals || []}
           initialIndex={lightboxState.index}
           onClose={closeLightbox}
+          triggerRef={lightboxTriggerRef}
+          title={lightboxCase.title}
         />
       ) : null}
     </div>
