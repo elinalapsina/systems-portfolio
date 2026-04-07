@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Analytics } from '@vercel/analytics/react';
 import {
   Menu,
   X,
@@ -1295,8 +1294,6 @@ export default function App() {
           onClose={closeLightbox}
         />
       ) : null}
-
-      <Analytics />
     </div>
   );
 }
