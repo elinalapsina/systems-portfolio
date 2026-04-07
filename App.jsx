@@ -244,8 +244,13 @@ const FEATURED_CASES = [
       'The system was intended to support clearer internal coordination, stronger process visibility, and more structured operational work.',
     relevance:
       'Systems thinking, internal process design, and operational clarity.',
-    sensitive: true,
-    visuals: [],
+    sensitive: false,
+    visuals: [
+      {
+        src: '/images/IMG-20260331-WA0028.jpg',
+        alt: 'ASAS Employee Workflow Management System mobile dashboard example',
+      },
+    ],
   },
   {
     id: 'sap1',
@@ -1120,10 +1125,7 @@ export default function App() {
         </section>
 
         <section id="sample-library" className="scroll-mt-24 pb-20 md:pb-28">
-          <SectionHeading
-            title="Work sample folder"
-            text="Public source materials used to support the portfolio."
-          />
+          <SectionHeading title="Work sample folder" />
 
           <div className="mt-10">
             <SampleLibraryCard />
