@@ -143,8 +143,28 @@ const FEATURED_CASES = [
     sensitive: false,
     visuals: [
       {
+        src: '/images/Labojumi_patreizejajai_www_03_02_2016.jpg',
+        alt: 'Existing RSU website before redesign',
+      },
+      {
         src: '/images/Labojumi_JAUNAJAI_www_27_12_2016.jpg',
-        alt: 'RSU Red Cross Medical College Website Redesign',
+        alt: 'RSU redesigned homepage overview',
+      },
+      {
+        src: '/images/Labojumi_JAUNAJAI_www_17_01_2017.jpg',
+        alt: 'RSU redesign improvement view 1',
+      },
+      {
+        src: '/images/Labojumi_JAUNAJAI_www_17_01_2017_2.jpg',
+        alt: 'RSU redesign improvement view 2',
+      },
+      {
+        src: '/images/Labojumi_JAUNAJAI_www_17_01_2017_4.jpg',
+        alt: 'RSU redesign improvement view 3',
+      },
+      {
+        src: '/images/Labojumi_JAUNAJAI_www_17_01_2017_5.jpg',
+        alt: 'RSU redesign improvement view 4',
       },
     ],
   },
